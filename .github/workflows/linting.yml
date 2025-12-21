@@ -1,0 +1,44 @@
+name: Linting
+
+on:
+  workflow_call:
+
+jobs:
+  linting_code:
+    runs-on: ubuntu-latest
+
+    services:
+      mariadb:
+        image: mariadb:11
+        env:
+          MARIADB_ROOT_PASSWORD: ${{ secrets.DB_PASSWORD || 'password' }}
+          MARIADB_DATABASE: ${{ secrets.DB_DATABASE || 'testing' }}
+        ports:
+          - 3306:3306
+        options: --health-cmd="healthcheck.sh --connect --innodb_initialized" --health-interval=10s --health-timeout=5s --health-retries=3
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install PHP & Extensions
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: "8.4"
+          extensions: mbstring, bcmath, ctype, fileinfo, json, openssl, pdo, pdo_mysql, tokenizer, xml, curl
+          coverage: none
+      - uses: actions/download-artifact@v4
+        with:
+          name: built-assets
+          path: .
+
+      - name: Setup Environment
+        run: |
+          cp .env.ci .env
+          php artisan key:generate
+
+      - name: Run Migrations
+        run: php artisan migrate --force
+
+      - name: Lint Codebase
+        run: php ./vendor/bin/pint --test

@@ -1,0 +1,27 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
+  workflow_dispatch:
+
+jobs:
+  setup:
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    uses: ./.github/workflows/setup.yml
+    secrets: inherit
+
+  linting:
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    needs: setup
+    uses: ./.github/workflows/linting.yml
+    secrets: inherit
+
+  tests:
+    if: github.event_name != 'pull_request' || github.event.pull_request.draft == false
+    needs: setup
+    uses: ./.github/workflows/tests.yml
+    secrets: inherit

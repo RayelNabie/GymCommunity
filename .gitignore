@@ -3,7 +3,11 @@
 .env
 .env.backup
 .env.production
-.pnpm-store
+data/pnpm/
+data/caddy/certificates/
+data/caddy/locks/
+data/caddy/pki/
+data/caddy/*.json
 .phpactor.json
 .phpunit.result.cache
 /.fleet

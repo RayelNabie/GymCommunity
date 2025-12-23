@@ -2,12 +2,16 @@
 
 namespace App\Models;
 
+use Database\Factories\PermissionFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Permission extends Model
 {
-    use HasUuids;
+    /** @use HasFactory<PermissionFactory> */
+    use HasFactory, HasUuids;
 
     /**
      * @var string
@@ -37,4 +41,12 @@ class Permission extends Model
         'name',
         'description',
     ];
+
+    /**
+     * @return BelongsToMany<Role, $this>
+     */
+    public function roles(): BelongsToMany
+    {
+        return $this->belongsToMany(Role::class, 'permission_role', 'permission_id', 'role_id')->withTimestamps();
+    }
 }

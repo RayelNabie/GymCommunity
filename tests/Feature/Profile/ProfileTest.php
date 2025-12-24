@@ -12,7 +12,9 @@ test('profile page is displayed', function () {
     $response->assertOk();
 });
 
-test('profile information can be updated', function () {
+test(/**
+ * @throws JsonException
+ */ 'profile information can be updated', function () {
     $user = User::factory()->create();
 
     $response = $this

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PermissionEnum;
 use Database\Factories\PermissionFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -41,6 +42,18 @@ class Permission extends Model
         'name',
         'description',
     ];
+
+    /**
+     * Get the attributes that should be cast.
+     *
+     * @return array<string, string>
+     */
+    protected function casts(): array
+    {
+        return [
+            'name' => PermissionEnum::class,
+        ];
+    }
 
     /**
      * @return BelongsToMany<Role, $this>

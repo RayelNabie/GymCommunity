@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ config('app.name', 'GymManager') }} - Elevate Your Fitness</title>
+    <title>{{ config('app.name', 'GymCommunity') }}</title>
 
     <!-- Fonts -->
     <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet">
@@ -13,372 +13,267 @@
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <style>
-        body {
-            font-family: 'Satoshi', sans-serif;
-            background-color: #000000;
-            color: #ffffff;
-        }
-        .blob-shape {
-            position: absolute;
-            z-index: -1;
-            opacity: 0.1;
-        }
-    </style>
 </head>
-<body class="flex flex-col min-h-screen">
+<body class="flex flex-col min-h-screen bg-black">
 
-    <!-- Navbar -->
-    <div class="navbar bg-black container mx-auto px-4 py-4 sticky top-0 z-50 bg-opacity-90 backdrop-blur border-b border-zinc-800">
-        <div class="navbar-start">
-            <div class="dropdown">
-                <div tabindex="0" role="button" class="btn btn-ghost lg:hidden text-white">
-                    <i data-lucide="menu" class="w-6 h-6"></i>
-                </div>
-                <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-zinc-900 rounded-box w-52 text-white">
-                    <li><a href="#">Home</a></li>
-                    <li><a href="#features">Features</a></li>
-                    <li><a href="#classes">Classes</a></li>
-                    <li><a href="#pricing">Pricing</a></li>
-                </ul>
-            </div>
-            <a class="btn btn-ghost text-2xl font-bold text-gym-primary gap-2">
-                <i data-lucide="dumbbell" class="w-8 h-8"></i>
-                GymManager
-            </a>
+<!-- Navbar -->
+<header
+    class="navbar bg-black container mx-auto px-4 py-4 sticky top-0 z-50 bg-opacity-60 backdrop-blur border-b border-opacity-60 border-gym-primary">
+    <div class="navbar-start">
+        <div class="dropdown">
+            <button tabindex="0" role="button" class="btn btn-ghost lg:hidden text-white">
+                <i data-lucide="menu" class="w-6 h-6"></i>
+            </button>
+            <nav tabindex="0"
+                 class="dropdown-content mt-3 z-[1] p-2 shadow bg-gym-light rounded-box w-52 text-white flex flex-col gap-2">
+                <a href="#"
+                   class="block px-4 py-2 hover:bg-gym-light rounded-lg hover:text-gym-primary transition-colors">Home</a>
+                <a href="#features"
+                   class="block px-4 py-2 hover:bg-gym-light rounded-lg hover:text-gym-primary transition-colors">Features</a>
+                <a href="#classes"
+                   class="block px-4 py-2 hover:bg-gym-light rounded-lg hover:text-gym-primary transition-colors">Classes</a>
+                <a href="#pricing"
+                   class="block px-4 py-2 hover:bg-gym-light rounded-lg hover:text-gym-primary transition-colors">Pricing</a>
+
+                <!-- Mobile Auth Links -->
+                @if (Route::has('login'))
+                    <div class="h-px bg-gym-light my-1"></div>
+                    @auth
+                        <a href="{{ url('/dashboard') }}"
+                           class="block px-4 py-2 hover:bg-gym-light rounded-lg hover:text-gym-primary transition-colors">Dashboard</a>
+                    @else
+                        <a href="{{ route('login') }}"
+                           class="block px-4 py-2 hover:bg-gym-light rounded-lg hover:text-gym-primary transition-colors">Log
+                            in</a>
+                        @if (Route::has('register'))
+                            <a href="{{ route('register') }}"
+                               class="block px-4 py-2 hover:bg-gym-light rounded-lg hover:text-gym-primary transition-colors">Sign
+                                up</a>
+                        @endif
+                    @endauth
+                @endif
+            </nav>
         </div>
-        <div class="navbar-center hidden lg:flex">
-            <ul class="menu menu-horizontal px-1 text-base font-medium text-gray-300">
-                <li><a href="#" class="hover:text-gym-primary">Home</a></li>
-                <li><a href="#features" class="hover:text-gym-primary">Features</a></li>
-                <li><a href="#classes" class="hover:text-gym-primary">Classes</a></li>
-                <li><a href="#pricing" class="hover:text-gym-primary">Pricing</a></li>
-            </ul>
-        </div>
-        <div class="navbar-end gap-2">
-            @if (Route::has('login'))
-                @auth
-                    <a href="{{ url('/dashboard') }}" class="btn btn-sm btn-outline btn-primary">Dashboard</a>
-                @else
-                    <a href="{{ route('login') }}" class="btn btn-sm btn-ghost text-white hover:text-gym-primary">Log in</a>
-                    @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="btn btn-sm bg-gym-primary hover:bg-yellow-400 text-black border-none font-bold">Sign up</a>
-                    @endif
-                @endauth
-            @endif
-        </div>
+        <a class="btn btn-ghost text-2xl font-bold text-gym-primary gap-2">
+            <i data-lucide="dumbbell" class="w-8 h-8"></i>
+            <span class="underline hidden sm:inline">GymCommunity.</span>
+        </a>
     </div>
+    <nav class="navbar-center hidden lg:flex gap-8">
+        <a href="#" class="text-base font-medium text-gym-secondary hover:text-gym-primary transition-colors">Home</a>
+        <a href="#features" class="text-base font-medium text-gym-secondary hover:text-gym-primary transition-colors">Features</a>
+        <a href="#classes"
+           class="text-base font-medium text-gym-secondary hover:text-gym-primary transition-colors">Classes</a>
+        <a href="#pricing"
+           class="text-base font-medium text-gym-secondary hover:text-gym-primary transition-colors">Pricing</a>
+    </nav>
+    <div class="navbar-end gap-2 hidden lg:flex">
+        @if (Route::has('login'))
+            @auth
+                <a href="{{ url('/dashboard') }}" class="btn btn-sm btn-outline btn-primary">Dashboard</a>
+            @else
+                <a href="{{ route('login') }}" class="btn btn-sm btn-ghost text-white hover:text-gym-primary">Log in</a>
+                @if (Route::has('register'))
+                    <a href="{{ route('register') }}"
+                       class="btn btn-sm bg-gym-primary hover:bg-yellow-400 text-black border-none font-bold">Sign
+                        up</a>
+                @endif
+            @endauth
+        @endif
+    </div>
+</header>
 
+<main>
     <!-- Hero Section -->
-    <section class="relative py-20 lg:py-32 overflow-hidden bg-black">
+    <section class="relative py-32 lg:py-48 overflow-hidden bg-black">
         <div class="container mx-auto px-4 flex flex-col-reverse lg:flex-row items-center gap-12">
             <!-- Text Content -->
             <div class="flex-1 text-center lg:text-left z-10">
-                <h1 class="text-5xl lg:text-7xl font-bold leading-tight text-white mb-6">
-                    Manage Your Gym <br>
-                    <span class="text-gym-primary">Like a Pro</span>
+                <h1 class="text-4xl lg:text-7xl font-bold leading-tight text-white mb-6">
+                    Het forum voor<br>
+                    <span class="text-gym-primary underline">Al je gymvragen</span>
                 </h1>
                 <p class="text-lg text-gray-400 mb-8 max-w-lg mx-auto lg:mx-0">
-                    The all-in-one platform to streamline your fitness business.
-                    Schedule classes, manage members, and track progress effortlessly.
+                    Geen vraag is te gek. Duik in de kennis van de groep en til je sportprestaties naar een hoger niveau
+                    met community-gedreven advies
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <a href="{{ route('register') }}" class="btn btn-lg bg-gym-primary hover:bg-yellow-400 text-black border-none shadow-lg font-bold">
-                        Start Free Trial
+                    <a href="{{ route('register') }}"
+                       class="btn btn-lg bg-gym-primary text-black border-none shadow-lg font-bold">
+                        Meld je nu aan
                         <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
                     </a>
-                    <a href="#features" class="btn btn-lg btn-ghost border-zinc-700 text-white hover:bg-zinc-800">
-                        Learn More
+                    <a href="#features" class="btn btn-lg btn-ghost border-gym-light text-white">
+                        Inloggen
                     </a>
                 </div>
                 <div class="mt-8 flex items-center justify-center lg:justify-start gap-4 text-sm text-gray-500">
                     <div class="flex items-center gap-1">
-                        <i data-lucide="check-circle" class="w-4 h-4 text-gym-primary"></i> No credit card required
+                        <i data-lucide="check-circle" class="w-4 h-4 text-gym-primary"></i> Gratis
                     </div>
                     <div class="flex items-center gap-1">
-                        <i data-lucide="check-circle" class="w-4 h-4 text-gym-primary"></i> 14-day free trial
+                        <i data-lucide="check-circle" class="w-4 h-4 text-gym-primary"></i> Actieve moderatie
                     </div>
                 </div>
             </div>
 
             <!-- SVG Illustration -->
             <div class="flex-1 relative z-10">
-                <!-- Abstract Gym Illustration -->
                 <svg viewBox="0 0 600 500" xmlns="http://www.w3.org/2000/svg" class="w-full h-auto drop-shadow-2xl">
                     <defs>
                         <linearGradient id="grad1" x1="0%" y1="0%" x2="100%" y2="100%">
-                            <stop offset="0%" style="stop-color:#FACC15;stop-opacity:1" />
-                            <stop offset="100%" style="stop-color:#000000;stop-opacity:1" />
+                            <stop offset="0%" style="stop-color:#FACC15;stop-opacity:1"/>
+                            <stop offset="100%" style="stop-color:#000000;stop-opacity:1"/>
                         </linearGradient>
                     </defs>
                     <!-- Background Blob -->
-                    <path fill="#18181B" d="M45.7,-76.3C58.9,-69.3,69.1,-55.6,76.3,-41.2C83.5,-26.8,87.7,-11.7,85.6,2.5C83.5,16.7,75.1,30,65.3,41.2C55.5,52.4,44.3,61.5,31.8,68.3C19.3,75.1,5.5,79.6,-7.1,77.8C-19.7,76,-31.1,67.9,-41.8,59.1C-52.5,50.3,-62.5,40.8,-69.8,29.1C-77.1,17.4,-81.7,3.5,-79.6,-9.4C-77.5,-22.3,-68.7,-34.2,-58.2,-43.5C-47.7,-52.8,-35.5,-59.5,-23.2,-67.1C-10.9,-74.7,1.5,-83.2,14.8,-84.2C28.1,-85.2,42.3,-78.7,45.7,-76.3Z" transform="translate(300 250) scale(3.5)" />
+                    <path fill="#18181B"
+                          d="M45.7,-76.3C58.9,-69.3,69.1,-55.6,76.3,-41.2C83.5,-26.8,87.7,-11.7,85.6,2.5C83.5,16.7,75.1,30,65.3,41.2C55.5,52.4,44.3,61.5,31.8,68.3C19.3,75.1,5.5,79.6,-7.1,77.8C-19.7,76,-31.1,67.9,-41.8,59.1C-52.5,50.3,-62.5,40.8,-69.8,29.1C-77.1,17.4,-81.7,3.5,-79.6,-9.4C-77.5,-22.3,-68.7,-34.2,-58.2,-43.5C-47.7,-52.8,-35.5,-59.5,-23.2,-67.1C-10.9,-74.7,1.5,-83.2,14.8,-84.2C28.1,-85.2,42.3,-78.7,45.7,-76.3Z"
+                          transform="translate(300 250) scale(2.8)"/>
 
-                    <!-- Dashboard UI Mockup -->
-                    <rect x="100" y="100" width="400" height="300" rx="10" fill="#27272A" stroke="#3F3F46" stroke-width="2" />
-                    <rect x="100" y="100" width="400" height="40" rx="10" fill="#18181B" />
-                    <circle cx="120" cy="120" r="5" fill="#ef4444" />
-                    <circle cx="140" cy="120" r="5" fill="#f59e0b" />
-                    <circle cx="160" cy="120" r="5" fill="#22c55e" />
-
-                    <!-- Chart -->
-                    <path d="M140 350 L140 200 L200 250 L260 180 L320 280 L380 150 L440 350 Z" fill="url(#grad1)" opacity="0.2" />
-                    <path d="M140 350 L140 200 L200 250 L260 180 L320 280 L380 150 L440 350" stroke="url(#grad1)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-
-                    <!-- Floating Elements -->
-                    <g transform="translate(420, 80)">
-                        <rect width="120" height="80" rx="8" fill="#27272A" stroke="#3F3F46" stroke-width="1" class="drop-shadow-lg" />
-                        <text x="60" y="30" font-family="sans-serif" font-size="12" text-anchor="middle" fill="#9CA3AF">Active Members</text>
-                        <text x="60" y="60" font-family="sans-serif" font-size="24" font-weight="bold" text-anchor="middle" fill="#FACC15">1,240</text>
-                    </g>
-
-                    <g transform="translate(60, 280)">
-                        <rect width="100" height="100" rx="8" fill="#27272A" stroke="#3F3F46" stroke-width="1" class="drop-shadow-lg" />
-                        <circle cx="50" cy="40" r="20" fill="#FACC15" opacity="0.2" />
-                        <path d="M50 30 L50 50 M40 40 L60 40" stroke="#FACC15" stroke-width="3" stroke-linecap="round" />
-                        <text x="50" y="80" font-family="sans-serif" font-size="12" text-anchor="middle" fill="#D1D5DB">New Class</text>
-                    </g>
+                    <!-- Lucide Biceps Flexed Icon -->
+                    <svg x="150" y="100" width="300" height="300" viewBox="0 0 24 24" fill="none" stroke="#FACC15" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M12.409 13.017A5 5 0 0 1 22 15c0 3.866-4 7-9 7-4.077 0-8.153-.82-10.371-2.462-.426-.316-.631-.832-.62-1.362C2.118 12.723 2.627 2 10 2a3 3 0 0 1 3 3 2 2 0 0 1-2 2c-1.105 0-1.64-.444-2-1" />
+                        <path d="M15 14a5 5 0 0 0-7.584 2" />
+                        <path d="M9.964 6.825C8.019 7.977 9.5 13 8 15" />
+                    </svg>
                 </svg>
+            </div>
             </div>
         </div>
     </section>
 
     <!-- Features Section -->
-    <section id="features" class="py-20 bg-zinc-900">
+    <section id="features" class="py-32 bg-zinc-900">
         <div class="container mx-auto px-4">
-            <div class="text-center mb-16">
-                <h2 class="text-3xl lg:text-4xl font-bold text-white mb-4">Everything You Need</h2>
-                <p class="text-gray-400 max-w-2xl mx-auto">
-                    Powerful features designed to help you run your gym smoothly and efficiently.
+            <div class="text-left mb-16">
+                <h2 class="text-3xl lg:text-4xl font-bold text-white mb-4">De ultieme gym-hub</h2>
+                <p class="text-gray-400 max-w-2xl">
+                    Alles wat je nodig hebt om kennis te delen, vragen te stellen en te groeien samen met andere
+                    atleten.
                 </p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                <!-- Feature 1 -->
-                <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
+                <article class="card bg-zinc-800 shadow-xl border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
-                            <i data-lucide="calendar-days" class="w-6 h-6"></i>
+                        <div
+                            class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
+                            <i data-lucide="messages-square" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="card-title text-white">Smart Scheduling</h3>
-                        <p class="text-gray-400">Manage class schedules, trainer availability, and room bookings in one place.</p>
-                        <!-- Functionality Placeholder -->
-                        <div class="badge badge-outline text-gray-400 mt-4 text-xs">Backend: ScheduleController</div>
+                        <h3 class="card-title text-white">Community Denktank</h3>
+                        <p class="text-gray-400">De plek voor al je vragen over training, voeding en herstel. Krijg
+                            antwoord van de community.</p>
                     </div>
-                </div>
+                </article>
 
-                <!-- Feature 2 -->
-                <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
+                <article class="card bg-zinc-800 shadow-xl border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
-                            <i data-lucide="users" class="w-6 h-6"></i>
+                        <div
+                            class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
+                            <i data-lucide="book-open" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="card-title text-white">Member Management</h3>
-                        <p class="text-gray-400">Track memberships, attendance, and payments with detailed member profiles.</p>
-                        <!-- Functionality Placeholder -->
-                        <div class="badge badge-outline text-gray-400 mt-4 text-xs">Backend: MemberController</div>
+                        <h3 class="card-title text-white">Interactieve Logs</h3>
+                        <p class="text-gray-400">Deel je schema's en progressie. Laat anderen meekijken en krijg
+                            feedback op je route naar succes.</p>
                     </div>
-                </div>
+                </article>
 
-                <!-- Feature 3 -->
-                <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
+                <article class="card bg-zinc-800 shadow-xl border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
-                            <i data-lucide="activity" class="w-6 h-6"></i>
+                        <div
+                            class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
+                            <i data-lucide="award" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="card-title text-white">Performance Tracking</h3>
-                        <p class="text-gray-400">Let members track their workouts, weight, and progress over time.</p>
-                        <!-- Functionality Placeholder -->
-                        <div class="badge badge-outline text-gray-400 mt-4 text-xs">Backend: ProgressController</div>
+                        <h3 class="card-title text-white">Expert Geverifieerd</h3>
+                        <p class="text-gray-400">Herken waardevol advies direct door badges voor gecertificeerde
+                            trainers en ervaren forumleden.</p>
                     </div>
-                </div>
+                </article>
 
-                <!-- Feature 4 -->
-                <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
+                <article class="card bg-zinc-800 shadow-xl border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
-                            <i data-lucide="credit-card" class="w-6 h-6"></i>
+                        <div
+                            class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
+                            <i data-lucide="search" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="card-title text-white">Billing & Payments</h3>
-                        <p class="text-gray-400">Automated billing, invoicing, and payment processing integration.</p>
-                        <!-- Functionality Placeholder -->
-                        <div class="badge badge-outline text-gray-400 mt-4 text-xs">Backend: PaymentController</div>
+                        <h3 class="card-title text-white">Slimme Zoekfunctie</h3>
+                        <p class="text-gray-400">Vind razendsnel eerdere discussies over specifieke oefeningen,
+                            supplementen of blessures.</p>
                     </div>
-                </div>
+                </article>
 
-                <!-- Feature 5 -->
-                <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
+                <article class="card bg-zinc-800 shadow-xl border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
-                            <i data-lucide="smartphone" class="w-6 h-6"></i>
+                        <div
+                            class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
+                            <i data-lucide="send" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="card-title text-white">Mobile App</h3>
-                        <p class="text-gray-400">Give members access to bookings and workouts on the go.</p>
-                        <!-- Functionality Placeholder -->
-                        <div class="badge badge-outline text-gray-400 mt-4 text-xs">API: Mobile Routes</div>
+                        <h3 class="card-title text-white">Direct Messaging</h3>
+                        <p class="text-gray-400">Leg 1-op-1 contact met trainingsmaatjes om af te spreken of dieper op
+                            techniek in te gaan.</p>
                     </div>
-                </div>
+                </article>
 
-                <!-- Feature 6 -->
-                <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
+                <article class="card bg-zinc-800 shadow-xl border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
-                            <i data-lucide="message-circle" class="w-6 h-6"></i>
+                        <div
+                            class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
+                            <i data-lucide="trending-up" class="w-6 h-6"></i>
                         </div>
-                        <h3 class="card-title text-white">Communication</h3>
-                        <p class="text-gray-400">Built-in messaging and notifications to keep your community engaged.</p>
-                        <!-- Functionality Placeholder -->
-                        <div class="badge badge-outline text-gray-400 mt-4 text-xs">Backend: NotificationSystem</div>
+                        <h3 class="card-title text-white">Trending Discussies</h3>
+                        <p class="text-gray-400">Blijf op de hoogte van wat er nu leeft in de gym, van nieuwe hypes tot
+                            wetenschappelijke doorbraken.</p>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Classes Preview Section -->
-    <section id="classes" class="py-20 bg-black">
-        <div class="container mx-auto px-4">
-            <div class="flex flex-col lg:flex-row justify-between items-end mb-12">
-                <div class="max-w-2xl">
-                    <h2 class="text-3xl lg:text-4xl font-bold text-white mb-4">Popular Classes</h2>
-                    <p class="text-gray-400">Join our community and find the perfect class for your fitness journey.</p>
-                </div>
-                <a href="#" class="btn btn-link text-gym-primary no-underline hover:text-yellow-300 mt-4 lg:mt-0">
-                    View All Classes <i data-lucide="arrow-right" class="w-4 h-4"></i>
-                </a>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <!-- Class Card 1 -->
-                <div class="card bg-zinc-900 shadow-lg image-full before:!bg-opacity-40 hover:before:!bg-opacity-30 transition-all cursor-pointer group border border-zinc-800">
-                    <figure>
-                        <!-- SVG Pattern Background instead of Image -->
-                        <svg class="w-full h-64 bg-zinc-800" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <pattern id="pattern-yoga" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-                                    <circle cx="20" cy="20" r="2" fill="#FACC15" opacity="0.3"/>
-                                </pattern>
-                            </defs>
-                            <rect width="100%" height="100%" fill="#18181B"/>
-                            <rect width="100%" height="100%" fill="url(#pattern-yoga)"/>
-                            <path d="M0 200 Q 150 100 300 200 T 600 200" stroke="#FACC15" stroke-width="2" fill="none" opacity="0.2"/>
-                        </svg>
-                    </figure>
-                    <div class="card-body justify-end">
-                        <h2 class="card-title text-white text-2xl">Yoga Flow</h2>
-                        <p class="text-gray-300 flex-grow-0">Find your balance and inner peace.</p>
-                        <div class="card-actions justify-end mt-4">
-                            <button class="btn btn-sm bg-gym-primary text-black border-none hover:bg-yellow-300">Book Now</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Class Card 2 -->
-                <div class="card bg-zinc-900 shadow-lg image-full before:!bg-opacity-40 hover:before:!bg-opacity-30 transition-all cursor-pointer group border border-zinc-800">
-                    <figure>
-                        <svg class="w-full h-64 bg-zinc-800" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <pattern id="pattern-hiit" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                                    <path d="M0 20 L20 0" stroke="#FACC15" stroke-width="1" opacity="0.2"/>
-                                </pattern>
-                            </defs>
-                            <rect width="100%" height="100%" fill="#18181B"/>
-                            <rect width="100%" height="100%" fill="url(#pattern-hiit)"/>
-                            <circle cx="300" cy="100" r="80" fill="#FACC15" opacity="0.1"/>
-                        </svg>
-                    </figure>
-                    <div class="card-body justify-end">
-                        <h2 class="card-title text-white text-2xl">HIIT Blast</h2>
-                        <p class="text-gray-300 flex-grow-0">High intensity training for maximum burn.</p>
-                        <div class="card-actions justify-end mt-4">
-                            <button class="btn btn-sm bg-gym-primary text-black border-none hover:bg-yellow-300">Book Now</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Class Card 3 -->
-                <div class="card bg-zinc-900 shadow-lg image-full before:!bg-opacity-40 hover:before:!bg-opacity-30 transition-all cursor-pointer group border border-zinc-800">
-                    <figure>
-                        <svg class="w-full h-64 bg-zinc-800" width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-                            <defs>
-                                <pattern id="pattern-strength" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse">
-                                    <rect x="0" y="0" width="25" height="25" fill="#FACC15" opacity="0.1"/>
-                                </pattern>
-                            </defs>
-                            <rect width="100%" height="100%" fill="#18181B"/>
-                            <rect width="100%" height="100%" fill="url(#pattern-strength)"/>
-                        </svg>
-                    </figure>
-                    <div class="card-body justify-end">
-                        <h2 class="card-title text-white text-2xl">Power Lifting</h2>
-                        <p class="text-gray-300 flex-grow-0">Build strength and muscle mass.</p>
-                        <div class="card-actions justify-end mt-4">
-                            <button class="btn btn-sm bg-gym-primary text-black border-none hover:bg-yellow-300">Book Now</button>
-                        </div>
-                    </div>
-                </div>
+                </article>
             </div>
         </div>
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 bg-gym-primary text-black relative overflow-hidden">
-        <!-- Decorative Circles -->
+    <section class="py-32 bg-gym-primary text-black relative overflow-hidden">
         <div class="absolute top-0 left-0 -ml-20 -mt-20 w-64 h-64 rounded-full bg-black opacity-10"></div>
         <div class="absolute bottom-0 right-0 -mr-20 -mb-20 w-80 h-80 rounded-full bg-white opacity-20"></div>
 
         <div class="container mx-auto px-4 text-center relative z-10">
-            <h2 class="text-3xl lg:text-5xl font-bold mb-6">Ready to Transform Your Gym?</h2>
+            <h2 class="text-3xl lg:text-5xl font-bold mb-6">Klaar om de diepte in te gaan?</h2>
             <p class="text-xl text-zinc-800 mb-10 max-w-2xl mx-auto">
-                Join thousands of gym owners who trust GymManager to run their business.
+                Word onderdeel van de grootste community-gedreven denktank en til je training naar een wetenschappelijk
+                niveau.
             </p>
-            <div class="flex flex-col sm:flex-row gap-4 justify-center">
-                <a href="{{ route('register') }}" class="btn btn-lg bg-black text-white hover:bg-zinc-800 border-none">
-                    Get Started Now
-                </a>
-                <a href="#" class="btn btn-lg btn-outline text-black border-black hover:bg-black hover:text-white">
-                    Contact Sales
-                </a>
-            </div>
+            <button class="btn bg-gym-light text-gym-primary px-8 py-3 font-bold uppercase tracking-wider">Meld je
+                gratis aan
+            </button>
         </div>
     </section>
+</main>
+<!-- Footer -->
+<footer class="footer p-10 bg-zinc-900 text-gray-400 border-t border-zinc-800 grid grid-cols-2 md:grid-cols-3 gap-8">
+    <aside class="col-span-2 md:col-span-1">
+        <div class="flex items-center gap-2 mb-4">
+            <i data-lucide="dumbbell" class="w-6 h-6 text-gym-primary"></i>
+            <span class="font-bold text-xl text-gym-primary underline">GymCommunity.</span>
+        </div>
+    </aside>
 
-    <!-- Footer -->
-    <footer class="footer p-10 bg-zinc-900 text-gray-400">
-        <aside>
-            <div class="flex items-center gap-2 mb-4">
-                <div class="bg-gym-primary p-2 rounded-lg text-black">
-                    <i data-lucide="dumbbell" class="w-6 h-6"></i>
-                </div>
-                <span class="font-bold text-xl text-white">GymManager</span>
-            </div>
-            <p>GymManager Industries Ltd.<br/>Providing reliable tech since 2025</p>
-        </aside>
-        <nav>
-            <h6 class="footer-title text-white opacity-100">Services</h6>
-            <a class="link link-hover">Branding</a>
-            <a class="link link-hover">Design</a>
-            <a class="link link-hover">Marketing</a>
-            <a class="link link-hover">Advertisement</a>
-        </nav>
-        <nav>
-            <h6 class="footer-title text-white opacity-100">Company</h6>
-            <a class="link link-hover">About us</a>
-            <a class="link link-hover">Contact</a>
-            <a class="link link-hover">Jobs</a>
-            <a class="link link-hover">Press kit</a>
-        </nav>
-        <nav>
-            <h6 class="footer-title text-white opacity-100">Legal</h6>
-            <a class="link link-hover">Terms of use</a>
-            <a class="link link-hover">Privacy policy</a>
-            <a class="link link-hover">Cookie policy</a>
-        </nav>
-    </footer>
+    <nav>
+        <h6 class="footer-title text-white opacity-100">Community</h6>
+        <a class="link link-hover">Huisregels</a>
+        <a class="link link-hover">Moderators</a>
+        <a class="link link-hover">Contact</a>
+    </nav>
 
-    <script>
-        // Initialize Lucide Icons
-        lucide.createIcons();
-    </script>
+    <nav>
+        <h6 class="footer-title text-white opacity-100">Juridisch</h6>
+        <a class="link link-hover">Voorwaarden</a>
+        <a class="link link-hover">Privacy</a>
+        <a class="link link-hover">Cookies</a>
+    </nav>
+</footer>
+
+<script>
+    // Initialize Lucide Icons
+    lucide.createIcons();
+</script>
 </body>
 </html>

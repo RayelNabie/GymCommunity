@@ -1,30 +1,38 @@
 <?php
 
+use App\Enums\RoleEnum;
 use App\Models\Role;
 use App\Models\User;
+use Database\Seeders\AccessControlSeeder;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function () {
+    $this->seed(AccessControlSeeder::class);
+});
+
 describe('Happy Flow', function () {
 
     test('It can create a new role with valid data', function () {
+        Role::where('name', RoleEnum::MEMBER->value)->delete();
+
         $role = Role::create([
-            'name' => 'manager',
-            'description' => 'Department manager',
+            'name' => RoleEnum::MEMBER->value,
+            'description' => 'Member Role',
         ]);
 
         expect($role)->toBeInstanceOf(Role::class)
-            ->and($role->name)->toBe('manager')
-            ->and($role->description)->toBe('Department manager')
+            ->and($role->name)->toBe(RoleEnum::MEMBER)
+            ->and($role->description)->toBe('Member Role')
             ->and($role->role_id)->toBeString(); // UUID check
     });
 
     test('It can assign a role to a user', function () {
         $user = User::factory()->create();
-        $role = Role::create(['name' => 'editor']);
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
 
         $role->users()->attach($user->user_id);
 
@@ -40,7 +48,7 @@ describe('Happy Flow', function () {
 
     test('It can detach a role from a user', function () {
         $user = User::factory()->create();
-        $role = Role::create(['name' => 'viewer']);
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
         $role->users()->attach($user->user_id);
 
         $role->users()->detach($user->user_id);
@@ -56,16 +64,15 @@ describe('Happy Flow', function () {
 describe('Unhappy Flow', function () {
 
     test('It cannot create a role with a duplicate name', function () {
-        Role::create(['name' => 'admin']);
 
         // Expecting a QueryException due to unique constraint on 'name'
-        expect(fn () => Role::create(['name' => 'admin']))
+        expect(fn () => Role::create(['name' => RoleEnum::ADMIN->value]))
             ->toThrow(QueryException::class);
     });
 
     test('It cannot assign the same role to a user twice', function () {
         $user = User::factory()->create();
-        $role = Role::create(['name' => 'super-admin']);
+        $role = Role::where('name', RoleEnum::MANAGER->value)->first();
 
         $role->users()->attach($user->user_id);
 
@@ -75,7 +82,7 @@ describe('Unhappy Flow', function () {
     });
 
     test('It cannot assign a non-existent user to a role', function () {
-        $role = Role::create(['name' => 'ghost-manager']);
+        $role = Role::where('name', RoleEnum::TRAINER->value)->first();
         $fakeUserId = Str::uuid()->toString();
 
         // Expecting QueryException due to foreign key constraint
@@ -86,28 +93,10 @@ describe('Unhappy Flow', function () {
 
 describe('Edge Cases', function () {
 
-    test('Its role name can be max length of 255 chars', function () {
-        $longName = str_repeat('a', 255);
-
-        $role = Role::create(['name' => $longName]);
-
-        expect($role->name)->toBe($longName);
-        $this->assertDatabaseHas('roles', ['name' => $longName]);
-    });
-
-    test('Its role name cannot exceed max length', function () {
-        $tooLongName = str_repeat('a', 256);
-
-        // Depending on DB strict mode, this might throw or truncate.
-        // Laravel/PDO usually throws QueryException for data too long.
-        expect(fn () => Role::create(['name' => $tooLongName]))
-            ->toThrow(QueryException::class);
-    });
-
     test('It removes all user associations cascadingly when deleting a role', function () {
         $user1 = User::factory()->create();
         $user2 = User::factory()->create();
-        $role = Role::create(['name' => 'team-lead']);
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
 
         $role->users()->attach([$user1->user_id, $user2->user_id]);
 
@@ -121,7 +110,7 @@ describe('Edge Cases', function () {
 
     test('It removes role associations cascadingly when deleting a user', function () {
         $user = User::factory()->create();
-        $role = Role::create(['name' => 'intern']);
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
 
         $role->users()->attach($user->user_id);
 
@@ -131,12 +120,5 @@ describe('Edge Cases', function () {
         $this->assertDatabaseMissing('user_role', ['user_id' => $user->user_id]);
         // Role should still exist
         $this->assertDatabaseHas('roles', ['role_id' => $role->role_id]);
-    });
-
-    test('Its role handles special characters in name', function () {
-        $specialName = 'Admin & Manager @ 100%';
-        $role = Role::create(['name' => $specialName]);
-
-        expect($role->name)->toBe($specialName);
     });
 });

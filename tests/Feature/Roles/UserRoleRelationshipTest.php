@@ -1,7 +1,9 @@
 <?php
 
+use App\Enums\RoleEnum;
 use App\Models\Role;
 use App\Models\User;
+use Database\Seeders\AccessControlSeeder;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\DB;
@@ -9,6 +11,10 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
+
+beforeEach(function () {
+    $this->seed(AccessControlSeeder::class);
+});
 
 describe('Happy Flow', function () {
 
@@ -25,10 +31,7 @@ describe('Happy Flow', function () {
 
     test('It can attach and detach roles to a user via User relation', function () {
         $user = User::factory()->create();
-        $role = Role::create([
-            'name' => 'editor',
-            'description' => 'Editor role',
-        ]);
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
 
         // Attach role to user
         $user->roles()->attach($role->getKey());
@@ -45,10 +48,7 @@ describe('Happy Flow', function () {
 
     test('It removes pivot entries when a user is deleted (cascade)', function () {
         $user = User::factory()->create();
-        $role = Role::create([
-            'name' => 'moderator',
-            'description' => 'Moderator role',
-        ]);
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
 
         $role->users()->attach($user->getKey());
         expect(DB::table('user_role')->count())->toBe(1);
@@ -60,10 +60,7 @@ describe('Happy Flow', function () {
 
     test('It removes pivot entries when a role is deleted (cascade)', function () {
         $user = User::factory()->create();
-        $role = Role::create([
-            'name' => 'contributor',
-            'description' => 'Contributor role',
-        ]);
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
 
         $role->users()->attach($user->getKey());
         expect(DB::table('user_role')->count())->toBe(1);
@@ -78,7 +75,7 @@ describe('Unhappy Flow', function () {
 
     test('It cannot attach the same role to a user twice', function () {
         $user = User::factory()->create();
-        $role = Role::factory()->create();
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
 
         $user->roles()->attach($role->role_id);
 
@@ -99,10 +96,10 @@ describe('Edge Cases', function () {
 
     test('Its users can have many roles', function () {
         $user = User::factory()->create();
-        $roles = Role::factory()->count(5)->create();
+        $roles = Role::all();
 
         $user->roles()->attach($roles->pluck('role_id'));
 
-        expect($user->roles)->toHaveCount(5);
+        expect($user->roles)->toHaveCount($roles->count());
     });
 });

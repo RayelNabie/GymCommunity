@@ -1,23 +1,30 @@
 <?php
 
+use App\Enums\PermissionEnum;
+use App\Enums\RoleEnum;
 use App\Models\Permission;
 use App\Models\Role;
+use Database\Seeders\AccessControlSeeder;
 use Illuminate\Database\QueryException;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Str;
 
 uses(RefreshDatabase::class);
 
+beforeEach(function () {
+    $this->seed(AccessControlSeeder::class);
+});
+
 describe('Happy Flow', function () {
 
     test('It can attach a permission to a role', function () {
-        $role = Role::factory()->create();
-        $permission = Permission::factory()->create();
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
+        $permission = Permission::where('name', PermissionEnum::MANAGE_USERS->value)->first();
 
         $role->permissions()->attach($permission);
 
-        expect($role->permissions)->toHaveCount(1)
-            ->and($role->permissions->first()->permission_id)->toBe($permission->permission_id);
+        expect($role->permissions)->toHaveCount(2) // 1 existing + 1 new
+            ->and($role->permissions->pluck('permission_id'))->toContain($permission->permission_id);
 
         $this->assertDatabaseHas('permission_role', [
             'role_id' => $role->role_id,
@@ -26,9 +33,11 @@ describe('Happy Flow', function () {
     });
 
     test('It can detach a permission from a role', function () {
-        $role = Role::factory()->create();
-        $permission = Permission::factory()->create();
-        $role->permissions()->attach($permission);
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
+        $permission = Permission::where('name', PermissionEnum::BOOK_CLASSES->value)->first();
+
+        // Ensure it's attached (seeded)
+        expect($role->permissions->pluck('name'))->toContain(PermissionEnum::BOOK_CLASSES);
 
         $role->permissions()->detach($permission);
 
@@ -39,22 +48,8 @@ describe('Happy Flow', function () {
         ]);
     });
 
-    test('It can use factory helper to create role with permissions', function () {
-        $role = Role::factory()->withPermissions(['edit_posts', 'delete_posts'])->create();
-
-        expect($role->permissions)->toHaveCount(2)
-            ->and($role->permissions->pluck('name'))->toContain('edit_posts', 'delete_posts');
-    });
-
-    test('It can use factory helper to create permission with roles', function () {
-        $permission = Permission::factory()->withRoles(['admin', 'editor'])->create();
-
-        expect($permission->roles)->toHaveCount(2)
-            ->and($permission->roles->pluck('name'))->toContain('admin', 'editor');
-    });
-
     test('It removes permission associations when deleting a role', function () {
-        $role = Role::factory()->withPermissions(['view_dashboard'])->create();
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
         $permission = $role->permissions->first();
 
         $role->delete();
@@ -69,8 +64,8 @@ describe('Happy Flow', function () {
     });
 
     test('It removes role associations when deleting a permission', function () {
-        $permission = Permission::factory()->withRoles(['manager'])->create();
-        $role = $permission->roles->first();
+        $permission = Permission::where('name', PermissionEnum::BOOK_CLASSES->value)->first();
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
 
         $permission->delete();
 
@@ -87,17 +82,17 @@ describe('Happy Flow', function () {
 describe('Unhappy Flow', function () {
 
     test('It cannot attach the same permission to a role twice', function () {
-        $role = Role::factory()->create();
-        $permission = Permission::factory()->create();
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
+        $permission = Permission::where('name', PermissionEnum::BOOK_CLASSES->value)->first();
 
-        $role->permissions()->attach($permission->permission_id);
+        // Already attached by seeder
 
         expect(fn () => $role->permissions()->attach($permission->permission_id))
             ->toThrow(QueryException::class);
     });
 
     test('It cannot attach a non-existent permission to a role', function () {
-        $role = Role::factory()->create();
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
         $fakePermissionId = Str::uuid()->toString();
 
         expect(fn () => $role->permissions()->attach($fakePermissionId))
@@ -108,20 +103,21 @@ describe('Unhappy Flow', function () {
 describe('Edge Cases', function () {
 
     test('It can attach many permissions to a role', function () {
-        $role = Role::factory()->create();
-        $permissions = Permission::factory()->count(10)->create();
+        $role = Role::where('name', RoleEnum::MEMBER->value)->first();
+        $permissions = Permission::all();
 
-        $role->permissions()->attach($permissions->pluck('permission_id'));
+        $role->permissions()->sync($permissions->pluck('permission_id'));
 
-        expect($role->permissions)->toHaveCount(10);
+        expect($role->permissions)->toHaveCount($permissions->count());
     });
 
     test('It can attach many roles to a permission', function () {
-        $permission = Permission::factory()->create();
-        $roles = Role::factory()->count(10)->create();
+        $permission = Permission::where('name', PermissionEnum::BOOK_CLASSES->value)->first();
+        $roles = Role::all();
 
-        $permission->roles()->attach($roles->pluck('role_id'));
+        // Sync all roles
+        $permission->roles()->sync($roles->pluck('role_id'));
 
-        expect($permission->roles)->toHaveCount(10);
+        expect($permission->roles)->toHaveCount($roles->count());
     });
 });

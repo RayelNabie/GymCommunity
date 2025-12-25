@@ -1,12 +1,13 @@
 import colors from 'tailwindcss/colors'
+import forms from '@tailwindcss/forms';
 import daisyui from 'daisyui'
 
 /** @type {import('tailwindcss').Config} */
 export default {
     content: [
-        "./resources/**/*.blade.php",
-        "./resources/**/*.js",
-        "./resources/**/*.vue",
+        './vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php',
+        './resources/js/**/*.js',
+        './resources/views/**/*.blade.php',
     ],
     theme: {
         extend: {
@@ -25,6 +26,6 @@ export default {
         }
     },
     plugins: [
-        daisyui,
+        daisyui, forms
     ],
 }

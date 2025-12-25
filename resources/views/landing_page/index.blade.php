@@ -6,40 +6,16 @@
     <title>{{ config('app.name', 'GymManager') }} - Elevate Your Fitness</title>
 
     <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://api.fontshare.com/v2/css?f[]=satoshi@300,400,500,700,900&display=swap" rel="stylesheet">
 
     <!-- DaisyUI & Tailwind CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/daisyui@4.12.10/dist/full.min.css" rel="stylesheet" type="text/css" />
-    <script src="https://cdn.tailwindcss.com"></script>
+    @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-
-    <script>
-        tailwind.config = {
-            theme: {
-                extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        odoo: {
-                            primary: '#FACC15', // Yellow
-                            secondary: '#FFFFFF', // White
-                            accent: '#FEF08A', // Light Yellow
-                            dark: '#FFFFFF', // White text for dark bg
-                            light: '#18181B', // Zinc 900
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Satoshi', sans-serif;
             background-color: #000000;
             color: #ffffff;
         }
@@ -66,17 +42,17 @@
                     <li><a href="#pricing">Pricing</a></li>
                 </ul>
             </div>
-            <a class="btn btn-ghost text-2xl font-bold text-odoo-primary gap-2">
-                <i data-lucide="dumbbell" class="w-8 h-8 text-white"></i>
+            <a class="btn btn-ghost text-2xl font-bold text-gym-primary gap-2">
+                <i data-lucide="dumbbell" class="w-8 h-8"></i>
                 GymManager
             </a>
         </div>
         <div class="navbar-center hidden lg:flex">
             <ul class="menu menu-horizontal px-1 text-base font-medium text-gray-300">
-                <li><a href="#" class="hover:text-odoo-primary">Home</a></li>
-                <li><a href="#features" class="hover:text-odoo-primary">Features</a></li>
-                <li><a href="#classes" class="hover:text-odoo-primary">Classes</a></li>
-                <li><a href="#pricing" class="hover:text-odoo-primary">Pricing</a></li>
+                <li><a href="#" class="hover:text-gym-primary">Home</a></li>
+                <li><a href="#features" class="hover:text-gym-primary">Features</a></li>
+                <li><a href="#classes" class="hover:text-gym-primary">Classes</a></li>
+                <li><a href="#pricing" class="hover:text-gym-primary">Pricing</a></li>
             </ul>
         </div>
         <div class="navbar-end gap-2">
@@ -84,9 +60,9 @@
                 @auth
                     <a href="{{ url('/dashboard') }}" class="btn btn-sm btn-outline btn-primary">Dashboard</a>
                 @else
-                    <a href="{{ route('login') }}" class="btn btn-sm btn-ghost text-white hover:text-odoo-primary">Log in</a>
+                    <a href="{{ route('login') }}" class="btn btn-sm btn-ghost text-white hover:text-gym-primary">Log in</a>
                     @if (Route::has('register'))
-                        <a href="{{ route('register') }}" class="btn btn-sm bg-odoo-primary hover:bg-yellow-400 text-black border-none font-bold">Sign up</a>
+                        <a href="{{ route('register') }}" class="btn btn-sm bg-gym-primary hover:bg-yellow-400 text-black border-none font-bold">Sign up</a>
                     @endif
                 @endauth
             @endif
@@ -100,14 +76,14 @@
             <div class="flex-1 text-center lg:text-left z-10">
                 <h1 class="text-5xl lg:text-7xl font-bold leading-tight text-white mb-6">
                     Manage Your Gym <br>
-                    <span class="text-odoo-primary">Like a Pro</span>
+                    <span class="text-gym-primary">Like a Pro</span>
                 </h1>
                 <p class="text-lg text-gray-400 mb-8 max-w-lg mx-auto lg:mx-0">
-                    The all-in-one platform to streamline your fitness business. 
+                    The all-in-one platform to streamline your fitness business.
                     Schedule classes, manage members, and track progress effortlessly.
                 </p>
                 <div class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                    <a href="{{ route('register') }}" class="btn btn-lg bg-odoo-primary hover:bg-yellow-400 text-black border-none shadow-lg font-bold">
+                    <a href="{{ route('register') }}" class="btn btn-lg bg-gym-primary hover:bg-yellow-400 text-black border-none shadow-lg font-bold">
                         Start Free Trial
                         <i data-lucide="arrow-right" class="w-5 h-5 ml-2"></i>
                     </a>
@@ -117,10 +93,10 @@
                 </div>
                 <div class="mt-8 flex items-center justify-center lg:justify-start gap-4 text-sm text-gray-500">
                     <div class="flex items-center gap-1">
-                        <i data-lucide="check-circle" class="w-4 h-4 text-odoo-primary"></i> No credit card required
+                        <i data-lucide="check-circle" class="w-4 h-4 text-gym-primary"></i> No credit card required
                     </div>
                     <div class="flex items-center gap-1">
-                        <i data-lucide="check-circle" class="w-4 h-4 text-odoo-primary"></i> 14-day free trial
+                        <i data-lucide="check-circle" class="w-4 h-4 text-gym-primary"></i> 14-day free trial
                     </div>
                 </div>
             </div>
@@ -137,18 +113,18 @@
                     </defs>
                     <!-- Background Blob -->
                     <path fill="#18181B" d="M45.7,-76.3C58.9,-69.3,69.1,-55.6,76.3,-41.2C83.5,-26.8,87.7,-11.7,85.6,2.5C83.5,16.7,75.1,30,65.3,41.2C55.5,52.4,44.3,61.5,31.8,68.3C19.3,75.1,5.5,79.6,-7.1,77.8C-19.7,76,-31.1,67.9,-41.8,59.1C-52.5,50.3,-62.5,40.8,-69.8,29.1C-77.1,17.4,-81.7,3.5,-79.6,-9.4C-77.5,-22.3,-68.7,-34.2,-58.2,-43.5C-47.7,-52.8,-35.5,-59.5,-23.2,-67.1C-10.9,-74.7,1.5,-83.2,14.8,-84.2C28.1,-85.2,42.3,-78.7,45.7,-76.3Z" transform="translate(300 250) scale(3.5)" />
-                    
+
                     <!-- Dashboard UI Mockup -->
                     <rect x="100" y="100" width="400" height="300" rx="10" fill="#27272A" stroke="#3F3F46" stroke-width="2" />
                     <rect x="100" y="100" width="400" height="40" rx="10" fill="#18181B" />
                     <circle cx="120" cy="120" r="5" fill="#ef4444" />
                     <circle cx="140" cy="120" r="5" fill="#f59e0b" />
                     <circle cx="160" cy="120" r="5" fill="#22c55e" />
-                    
+
                     <!-- Chart -->
                     <path d="M140 350 L140 200 L200 250 L260 180 L320 280 L380 150 L440 350 Z" fill="url(#grad1)" opacity="0.2" />
                     <path d="M140 350 L140 200 L200 250 L260 180 L320 280 L380 150 L440 350" stroke="url(#grad1)" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round" />
-                    
+
                     <!-- Floating Elements -->
                     <g transform="translate(420, 80)">
                         <rect width="120" height="80" rx="8" fill="#27272A" stroke="#3F3F46" stroke-width="1" class="drop-shadow-lg" />
@@ -181,7 +157,7 @@
                 <!-- Feature 1 -->
                 <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-odoo-primary">
+                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
                             <i data-lucide="calendar-days" class="w-6 h-6"></i>
                         </div>
                         <h3 class="card-title text-white">Smart Scheduling</h3>
@@ -194,7 +170,7 @@
                 <!-- Feature 2 -->
                 <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-odoo-primary">
+                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
                             <i data-lucide="users" class="w-6 h-6"></i>
                         </div>
                         <h3 class="card-title text-white">Member Management</h3>
@@ -207,7 +183,7 @@
                 <!-- Feature 3 -->
                 <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-odoo-primary">
+                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
                             <i data-lucide="activity" class="w-6 h-6"></i>
                         </div>
                         <h3 class="card-title text-white">Performance Tracking</h3>
@@ -220,7 +196,7 @@
                 <!-- Feature 4 -->
                 <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-odoo-primary">
+                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
                             <i data-lucide="credit-card" class="w-6 h-6"></i>
                         </div>
                         <h3 class="card-title text-white">Billing & Payments</h3>
@@ -233,7 +209,7 @@
                 <!-- Feature 5 -->
                 <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-odoo-primary">
+                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
                             <i data-lucide="smartphone" class="w-6 h-6"></i>
                         </div>
                         <h3 class="card-title text-white">Mobile App</h3>
@@ -246,7 +222,7 @@
                 <!-- Feature 6 -->
                 <div class="card bg-zinc-800 shadow-xl hover:shadow-2xl transition-shadow duration-300 border border-zinc-700">
                     <div class="card-body">
-                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-odoo-primary">
+                        <div class="w-12 h-12 rounded-lg bg-zinc-700 flex items-center justify-center mb-4 text-gym-primary">
                             <i data-lucide="message-circle" class="w-6 h-6"></i>
                         </div>
                         <h3 class="card-title text-white">Communication</h3>
@@ -267,7 +243,7 @@
                     <h2 class="text-3xl lg:text-4xl font-bold text-white mb-4">Popular Classes</h2>
                     <p class="text-gray-400">Join our community and find the perfect class for your fitness journey.</p>
                 </div>
-                <a href="#" class="btn btn-link text-odoo-primary no-underline hover:text-yellow-300 mt-4 lg:mt-0">
+                <a href="#" class="btn btn-link text-gym-primary no-underline hover:text-yellow-300 mt-4 lg:mt-0">
                     View All Classes <i data-lucide="arrow-right" class="w-4 h-4"></i>
                 </a>
             </div>
@@ -292,7 +268,7 @@
                         <h2 class="card-title text-white text-2xl">Yoga Flow</h2>
                         <p class="text-gray-300 flex-grow-0">Find your balance and inner peace.</p>
                         <div class="card-actions justify-end mt-4">
-                            <button class="btn btn-sm bg-odoo-primary text-black border-none hover:bg-yellow-300">Book Now</button>
+                            <button class="btn btn-sm bg-gym-primary text-black border-none hover:bg-yellow-300">Book Now</button>
                         </div>
                     </div>
                 </div>
@@ -315,7 +291,7 @@
                         <h2 class="card-title text-white text-2xl">HIIT Blast</h2>
                         <p class="text-gray-300 flex-grow-0">High intensity training for maximum burn.</p>
                         <div class="card-actions justify-end mt-4">
-                            <button class="btn btn-sm bg-odoo-primary text-black border-none hover:bg-yellow-300">Book Now</button>
+                            <button class="btn btn-sm bg-gym-primary text-black border-none hover:bg-yellow-300">Book Now</button>
                         </div>
                     </div>
                 </div>
@@ -337,7 +313,7 @@
                         <h2 class="card-title text-white text-2xl">Power Lifting</h2>
                         <p class="text-gray-300 flex-grow-0">Build strength and muscle mass.</p>
                         <div class="card-actions justify-end mt-4">
-                            <button class="btn btn-sm bg-odoo-primary text-black border-none hover:bg-yellow-300">Book Now</button>
+                            <button class="btn btn-sm bg-gym-primary text-black border-none hover:bg-yellow-300">Book Now</button>
                         </div>
                     </div>
                 </div>
@@ -346,7 +322,7 @@
     </section>
 
     <!-- CTA Section -->
-    <section class="py-20 bg-odoo-primary text-black relative overflow-hidden">
+    <section class="py-20 bg-gym-primary text-black relative overflow-hidden">
         <!-- Decorative Circles -->
         <div class="absolute top-0 left-0 -ml-20 -mt-20 w-64 h-64 rounded-full bg-black opacity-10"></div>
         <div class="absolute bottom-0 right-0 -mr-20 -mb-20 w-80 h-80 rounded-full bg-white opacity-20"></div>
@@ -371,29 +347,29 @@
     <footer class="footer p-10 bg-zinc-900 text-gray-400">
         <aside>
             <div class="flex items-center gap-2 mb-4">
-                <div class="bg-odoo-primary p-2 rounded-lg text-black">
+                <div class="bg-gym-primary p-2 rounded-lg text-black">
                     <i data-lucide="dumbbell" class="w-6 h-6"></i>
                 </div>
                 <span class="font-bold text-xl text-white">GymManager</span>
             </div>
             <p>GymManager Industries Ltd.<br/>Providing reliable tech since 2025</p>
-        </aside> 
+        </aside>
         <nav>
-            <h6 class="footer-title text-white opacity-100">Services</h6> 
+            <h6 class="footer-title text-white opacity-100">Services</h6>
             <a class="link link-hover">Branding</a>
             <a class="link link-hover">Design</a>
             <a class="link link-hover">Marketing</a>
             <a class="link link-hover">Advertisement</a>
-        </nav> 
+        </nav>
         <nav>
-            <h6 class="footer-title text-white opacity-100">Company</h6> 
+            <h6 class="footer-title text-white opacity-100">Company</h6>
             <a class="link link-hover">About us</a>
             <a class="link link-hover">Contact</a>
             <a class="link link-hover">Jobs</a>
             <a class="link link-hover">Press kit</a>
-        </nav> 
+        </nav>
         <nav>
-            <h6 class="footer-title text-white opacity-100">Legal</h6> 
+            <h6 class="footer-title text-white opacity-100">Legal</h6>
             <a class="link link-hover">Terms of use</a>
             <a class="link link-hover">Privacy policy</a>
             <a class="link link-hover">Cookie policy</a>

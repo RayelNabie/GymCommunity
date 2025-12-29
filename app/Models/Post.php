@@ -3,13 +3,16 @@
 namespace App\Models;
 
 use App\Enums\PostCategoryEnum;
+use Database\Factories\PostFactory;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Post extends Model
 {
-    use HasUuids;
+    /** @use HasFactory<Postfactory> */
+    use HasFactory, HasUuids;
 
     /**
      * @var string
@@ -58,6 +61,7 @@ class Post extends Model
 
     /**
      * Gets author of the post
+     *
      * @return BelongsTo<User, $this>
      */
     public function user(): BelongsTo

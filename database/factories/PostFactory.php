@@ -28,11 +28,11 @@ class PostFactory extends Factory
             'slug' => Str::slug($title),
             'body' => fake()->paragraphs(5, true),
             'category' => fake()->randomElement(PostCategoryEnum::class),
-            'image' => fake()->boolean(30) ? 'posts/' . fake()->uuid() . '.jpg' : null,
+            'image' => fake()->boolean(30) ? 'posts/'.fake()->uuid().'.jpg' : null,
         ];
     }
 
-    //Enum States
+    // Enum States
     public function kracht(): static
     {
         return $this->state(['category' => PostCategoryEnum::KRACHT]);

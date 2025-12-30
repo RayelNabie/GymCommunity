@@ -31,7 +31,7 @@
                 Ontdek de laatste inzichten, trainingstips en wetenschappelijke analyses van onze community experts.
             </p>
         </div>
-        <div class="flex gap-2"></div>
+        <button class="btn  px-4 bg-gym-primary font-bold text-gym-background">+ nieuw artikel</button>
     </div>
 
     <!-- Posts -->

@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\PermissionEnum;
 use Database\Factories\UserFactory;
 use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -87,5 +88,15 @@ class User extends Authenticatable implements MustVerifyEmail
     public function posts(): HasMany
     {
         return $this->hasMany(Post::class, 'user_id');
+    }
+
+    /**
+     * Check if the user has a specific permission via their roles.
+     */
+    public function hasPermission(PermissionEnum $permission): bool
+    {
+        return $this->roles()
+            ->whereHas('permissions', fn ($query) => $query->where('name', $permission->value))
+            ->exists();
     }
 }

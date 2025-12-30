@@ -103,8 +103,8 @@
             <div class="bg-gym-surface-hover w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                 <i data-lucide="file-x" class="w-8 h-8 text-gym-meta"></i>
             </div>
-            <h3 class="text-xl font-bold text-white mb-2">Nog geen artikelen</h3>
-            <p class="text-gym-muted">Er zijn momenteel geen artikelen beschikbaar. Kom later terug!</p>
+            <h3 class="text-xl font-bold text-white mb-2">Geen posts gevonden</h3>
+            <p class="text-gym-muted">Er zijn nog geen posts geplaatst</p>
         </div>
     @endif
 </main>

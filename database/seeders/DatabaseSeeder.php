@@ -21,8 +21,10 @@ class DatabaseSeeder extends Seeder
             AccessControlSeeder::class,
         ]);
 
-        User::factory(10)->create();
+        // Create regular users
+        $users = User::factory(10)->create();
 
+        // Create admin user
         $adminUser = User::factory()->create([
             'name' => 'Admin',
             'email' => 'admin@example.com',
@@ -34,5 +36,9 @@ class DatabaseSeeder extends Seeder
         if ($adminRole) {
             $adminUser->roles()->sync([$adminRole->getkey()]);
         }
+
+        $this->call([
+            PostSeeder::class,
+        ]);
     }
 }

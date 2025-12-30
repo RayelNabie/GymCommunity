@@ -5,9 +5,9 @@ namespace App\Enums;
 enum PermissionEnum: string
 {
     // Blog permissions
-    case CREATE_POSTS = 'posts.create';
-    case EDIT_ANY_POSTS = 'posts.edit_all';
-    case PUBLISH_POSTS = 'posts.publish';
+    case CREATE_POSTS = 'artikelen.create';
+    case EDIT_ANY_POSTS = 'artikelen.edit_all';
+    case PUBLISH_POSTS = 'artikelen.publish';
 
     // Agenda permissions
     case MANAGE_CLASSES = 'classes.manage';

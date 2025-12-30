@@ -20,8 +20,15 @@ export default {
                     primary: colors.yellow[400],
                     secondary: colors.white,
                     accent: colors.yellow[200],
-                    dark: colors.white,
-                    light: colors.zinc[900],
+                    background: colors.black,
+                    surface: colors.zinc[900],
+                    'surface-hover': colors.zinc[800],
+                    border: colors.zinc[800],
+                    muted: colors.gray[400],
+                    meta: colors.gray[500],
+                    icon: colors.zinc[600],
+                    divider: colors.zinc[700],
+                    'text-light': colors.gray[300],
                 }
             }
         }

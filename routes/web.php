@@ -9,6 +9,7 @@ Route::get('/', function () {
 });
 
 Route::get('/artikelen', [PostController::class, 'index'])->name('artikelen.index');
+Route::post('/artikelen', [PostController::class, 'store'])->middleware('auth')->name('artikelen.store');
 
 Route::get('/dashboard', function () {
     return view('dashboard');

@@ -4,14 +4,17 @@ use App\Models\Post;
 use App\Models\User;
 
 describe('Happy Flow', function () {
-    test('It can access the index page', function () {
+    it('can render the index page', function () {
+        $user = User::factory()->create();
+        Post::factory()->count(3)->create();
+
         $response = $this->get(route('artikelen.index'));
 
         $response->assertStatus(200);
         $response->assertViewIs('artikelen.index');
     });
 
-    test('It displays posts in latest order', function () {
+    it('displays posts in latest order', function () {
         $user = User::factory()->create(['name' => 'Test Author']);
 
         $oldPost = Post::factory()->create([
@@ -36,11 +39,10 @@ describe('Happy Flow', function () {
 });
 
 describe('Unhappy Flow', function () {
-    test('It displays an empty state when no posts exist', function () {
+    it('can render the index page with no posts', function () {
         $response = $this->get(route('artikelen.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Geen posts gevonden');
-        $response->assertSee('Er zijn nog geen posts geplaatst');
+        $response->assertSee('Nog geen artikelen');
     });
 });

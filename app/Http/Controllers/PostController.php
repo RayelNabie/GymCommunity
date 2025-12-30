@@ -22,13 +22,13 @@ class PostController extends Controller
         ]);
     }
 
-    //    /**
-    //     * Show the form for creating a new resource.
-    //     */
-    //    public function create(Request $request)
-    //    {
-    //        //
-    //    }
+    /**
+     * Show the form for creating a new resource.
+     */
+    public function create(): View
+    {
+        return view('artikelen.create');
+    }
 
     /**
      * Store a newly created resource in storage.
@@ -53,12 +53,18 @@ class PostController extends Controller
         }
 
         if ($hasPolicyApproval && $inputIsValidated && $isAuthenticated) {
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('posts', 'public');
+            }
+
             /** @var array{title: string, body: string, category: string} $validatedData */
             $request->user()->posts()->create([
                 'title' => $validatedData['title'],
                 'body' => $validatedData['body'],
                 'category' => $validatedData['category'],
                 'slug' => Str::slug($validatedData['title']),
+                'image' => $imagePath,
             ]);
 
             return redirect()->route('artikelen.index')

@@ -1,5 +1,5 @@
-@use('App\Enums\PostCategoryEnum;')
-@use('App\Models\Post;')
+@use('App\Enums\PostCategoryEnum')
+@use('App\Models\Post')
 
 @props([
     /** @var Post|null */
@@ -65,8 +65,8 @@
            id="image"
            name="image"
            @class([
-               'file-input file-input-bordered bg-gym-background border-gym-border focus:border-gym-primary w-full',
-               'file-input-error' => $errors->has('image')
+               'file-input file-input-bordered file-input-primary bg-gym-background border-gym-border w-full transition-all',
+               'file-input-error ring-1 ring-error' => $errors->has('image')
            ])
            accept="image/*"/>
 </div>

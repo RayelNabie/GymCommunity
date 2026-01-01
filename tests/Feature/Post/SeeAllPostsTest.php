@@ -44,5 +44,6 @@ describe('Unhappy Flow', function () {
 
         $response->assertStatus(200);
         $response->assertSee('Nog geen artikelen');
+        $response->assertSee('De community is nog even aan het opwarmen. Wees de eerste die zijn kennis deelt over krachttraining of voeding!');
     });
 });

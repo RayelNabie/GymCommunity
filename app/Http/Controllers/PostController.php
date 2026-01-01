@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Requests\Posts\PostCreateRequest;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -17,9 +18,7 @@ class PostController extends Controller
     {
         $posts = Post::with('user')->latest()->paginate(15);
 
-        return view('artikelen.index', [
-            'posts' => $posts,
-        ]);
+        return view('artikelen.index', ['posts' => $posts]);
     }
 
     /**
@@ -27,7 +26,24 @@ class PostController extends Controller
      */
     public function create(): View
     {
-        return view('artikelen.create');
+        $isAuthenticated = false;
+        $hasPolicyApproval = false;
+
+        $user = auth()->user();
+
+        if ($user !== null) {
+            $isAuthenticated = true;
+        }
+
+        if ($isAuthenticated && $user->can('create', Post::class)) {
+            $hasPolicyApproval = true;
+        }
+
+        if ($isAuthenticated && $hasPolicyApproval) {
+            return view('artikelen.create');
+        }
+
+        abort(403, 'Je hebt geen rechten om een nieuw artikel te schrijven.');
     }
 
     /**

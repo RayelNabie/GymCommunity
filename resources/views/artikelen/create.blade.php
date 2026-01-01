@@ -1,33 +1,35 @@
-<x-app-layout title="Nieuw Artikel">
-    <div class="max-w-2xl mx-auto">
-        <div class="mb-8">
-            <a href="{{ route('artikelen.index') }}" class="btn btn-ghost btn-sm gap-2 text-gym-muted hover:text-white pl-0">
-                <i data-lucide="arrow-left" class="w-4 h-4"></i>
-                Terug naar overzicht
-            </a>
-            <h1 class="text-3xl md:text-4xl font-bold text-white mt-4">
+<x-app-layout title="Nieuw Artikel Publiceren">
+    <div class="py-12">
+        {{-- Header van de pagina --}}
+        <div class="mb-10">
+            <h1 class="text-4xl font-black text-white tracking-tighter uppercase italic">
                 Nieuw <span class="text-gym-primary">Artikel</span>
             </h1>
-            <p class="text-gym-muted mt-2">
-                Deel jouw kennis en ervaring met de community.
-            </p>
+            <p class="text-zinc-400 mt-2">Deel je expertise en help de community groeien.</p>
         </div>
 
-        <div class="card bg-gym-surface border border-gym-border shadow-xl">
-            <div class="card-body">
-                <form action="{{ route('artikelen.store') }}" method="POST" enctype="multipart/form-data" class="flex flex-col gap-6">
-                    @csrf
+        {{-- Het Formulier --}}
+        <div class="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 backdrop-blur-md">
+            <form action="{{ route('artikelen.store') }}"
+                  method="POST"
+                  enctype="multipart/form-data"
+                  class="space-y-6">
 
-                    <x-artikelen.shared.form-fields />
+                @csrf
+                <x-artikelen.shared.form-fields />
 
-                    <div class="card-actions justify-end mt-4">
-                        <button type="submit" class="btn bg-gym-primary text-gym-background hover:bg-gym-accent font-bold w-full md:w-auto">
-                            <i data-lucide="send" class="w-4 h-4 mr-2"></i>
-                            Publiceren
-                        </button>
-                    </div>
-                </form>
-            </div>
+                {{-- Actie Knoppen --}}
+                <div class="flex items-center justify-end gap-4 pt-6 border-t border-zinc-800">
+                    <a href="{{ route('artikelen.index') }}" class="btn btn-ghost text-gym-secondary hover:bg-gym-primary hover:text-gym-background">
+                        Annuleren
+                    </a>
+
+                    <button type="submit" class="btn btn-primary px-4 hover:bg-gym-primary hover:text-gym-background">
+                        <i data-lucide="send" class="size-5 mr-2"></i>
+                        Publiceren
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </x-app-layout>

@@ -10,26 +10,7 @@
 
         {{-- Het Formulier --}}
         <div class="bg-zinc-900/50 border border-zinc-800 rounded-3xl p-8 backdrop-blur-md">
-            <form action="{{ route('artikelen.store') }}"
-                  method="POST"
-                  enctype="multipart/form-data"
-                  class="space-y-6">
-
-                @csrf
-                <x-artikelen.shared.form-fields />
-
-                {{-- Actie Knoppen --}}
-                <div class="flex items-center justify-end gap-4 pt-6 border-t border-zinc-800">
-                    <a href="{{ route('artikelen.index') }}" class="btn btn-ghost text-gym-secondary hover:bg-gym-primary hover:text-gym-background">
-                        Annuleren
-                    </a>
-
-                    <button type="submit" class="btn btn-primary px-4 hover:bg-gym-primary hover:text-gym-background">
-                        <i data-lucide="send" class="size-5 mr-2"></i>
-                        Publiceren
-                    </button>
-                </div>
-            </form>
+            <x-artikelen.shared.form />
         </div>
     </div>
 </x-app-layout>

@@ -16,6 +16,7 @@ class PostController extends Controller
      */
     public function index(): View
     {
+
         $posts = Post::with('user')->latest()->paginate(15);
 
         return view('artikelen.index', ['posts' => $posts]);
@@ -90,14 +91,44 @@ class PostController extends Controller
         abort(403, 'Access Denied');
     }
 
-    //    /**
-    //     * Display the specified resource.
-    //     */
-    //    public function show(string $id)
-    //    {
-    //        //
-    //    }
-    //
+    /**
+     * Display the specified resource.
+     */
+    public function show(Post $post): View
+    {
+        $isPublished = false;
+        $canView = false;
+        $canEdit = false;
+        $canDelete = false;
+
+        if ($post->exists) {
+            $isPublished = true;
+        }
+        $user = auth()->user();
+
+        // enforce policy even though anyone can view
+        if ($user !== null && $user->can('view', $post)) {
+            $canView = true;
+        }
+
+        if ($user !== null && $user->can('update', $post)) {
+            $canEdit = true;
+        }
+
+        if ($user !== null && $user->can('update', $post)) {
+            $canDelete = true;
+        }
+
+        if ($isPublished && $canView) {
+            return view('artikelen.show', [
+                'post' => $post,
+                'canEdit' => $canEdit,
+                'canDelete' => $canDelete,
+            ]);
+        }
+
+        abort(404, 'Artikel niet gevonden of nog niet openbaar.');
+    }
     //    /**
     //     * Show the form for editing the specified resource.
     //     */

@@ -10,22 +10,32 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules\Enum;
 
-class PostCreateRequest extends FormRequest
+class PostRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
      */
     public function authorize(): bool
     {
-        $hasPermission = false;
+        $isAuthenticated = false;
+        $canCreate = false;
+        $canUpdate = false;
 
         $user = $this->user();
-
-        if ($user !== null && $user->can('create', Post::class)) {
-            $hasPermission = true;
+        if ($user !== null) {
+            $isAuthenticated = true;
         }
 
-        if ($hasPermission) {
+        if ($isAuthenticated && $this->isMethod('POST')) {
+            $canCreate = $user->can('create', Post::class);
+        }
+
+        if ($isAuthenticated && $this->isMethod('PUT')) {
+            $post = $this->route('post');
+            $canUpdate = $post && $user->can('update', $post);
+        }
+
+        if ($isAuthenticated && ($canCreate || $canUpdate)) {
             return true;
         }
 

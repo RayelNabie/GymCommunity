@@ -2,7 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Posts\PostCreateRequest;
+use App\Enums\PostCategoryEnum;
+use App\Http\Requests\Posts\PostRequest;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
@@ -50,7 +51,7 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PostCreateRequest $request): RedirectResponse
+    public function store(PostRequest $request): RedirectResponse
     {
         $isAuthenticated = false;
         $inputIsValidated = false;
@@ -115,7 +116,7 @@ class PostController extends Controller
             $canEdit = true;
         }
 
-        if ($user !== null && $user->can('update', $post)) {
+        if ($user !== null && $user->can('delete', $post)) {
             $canDelete = true;
         }
 
@@ -129,22 +130,104 @@ class PostController extends Controller
 
         abort(404, 'Artikel niet gevonden of nog niet openbaar.');
     }
-    //    /**
-    //     * Show the form for editing the specified resource.
-    //     */
-    //    public function edit(string $id)
-    //    {
-    //        //
-    //    }
-    //
-    //    /**
-    //     * Update the specified resource in storage.
-    //     */
-    //    public function update(Request $request, string $id)
-    //    {
-    //        //
-    //    }
-    //
+
+    /**
+     * Show the form for editing the specified resource.
+     */
+    public function edit(Post $post): View
+    {
+        $isAuthenticated = false;
+        $hasPolicyApproval = false;
+
+        $user = auth()->user();
+        if ($user !== null) {
+            $isAuthenticated = true;
+        }
+
+        if ($isAuthenticated && $user->can('update', $post)) {
+            $hasPolicyApproval = true;
+        }
+
+        if ($isAuthenticated && $hasPolicyApproval) {
+            return view('artikelen.edit', compact('post'));
+        }
+
+        abort(403, 'Je bent niet de eigenaar van dit artikel.');
+    }
+
+    /**
+     * Update the specified resource in storage.
+     */
+    public function update(PostRequest $request, Post $post): RedirectResponse
+    {
+        $isAuthenticated = false;
+        $hasPolicyApproval = false;
+        $inputIsValidated = false;
+        $isNewInformation = false;
+
+        $user = $request->user();
+        if ($user !== null) {
+            $isAuthenticated = true;
+        }
+
+        if ($isAuthenticated && $user->can('update', $post)) {
+            $hasPolicyApproval = true;
+        }
+
+        $validatedData = $request->validated();
+        if (! empty($validatedData)) {
+            $inputIsValidated = true;
+        }
+
+        $hasNewImage = $request->hasFile('image');
+
+        foreach (['title', 'body', 'category'] as $field) {
+            /** @var PostCategoryEnum|string $currentValue */
+            $currentValue = $post->$field;
+
+            $comparisonValue = ($currentValue instanceof PostCategoryEnum)
+                ? $currentValue->value
+                : $currentValue;
+
+            if ($comparisonValue !== $validatedData[$field]) {
+                $isNewInformation = true;
+                break;
+            }
+        }
+
+        if ($hasNewImage) {
+            $isNewInformation = true;
+        }
+
+        if (! $isNewInformation) {
+            return redirect()->back()
+                ->with('error', 'Je hebt niets gewijzigd.');
+        }
+
+        if ($isAuthenticated && $hasPolicyApproval && $inputIsValidated) {
+            if ($hasNewImage) {
+                $oldImage = $post->image;
+                $oldImage && Storage::disk('public')->delete($oldImage);
+
+                $newImage = $request->file('image');
+                $validatedData['image'] = $newImage->store('posts', 'public');
+            }
+
+            /** @var array{title: string, body: string, category: string, image?: string} $validatedData */
+            $post->update([
+                'title' => $validatedData['title'],
+                'body' => $validatedData['body'],
+                'category' => $validatedData['category'],
+                'slug' => Str::slug($validatedData['title']),
+                'image' => $validatedData['image'] ?? $post->image,
+            ]);
+
+            return redirect()->route('artikelen.index')
+                ->with('success', 'Artikel succesvol bijgewerkt.');
+        }
+
+        abort(403, 'Wijziging niet toegestaan.');
+    }
     //    /**
     //     * Remove the specified resource from storage.
     //     */

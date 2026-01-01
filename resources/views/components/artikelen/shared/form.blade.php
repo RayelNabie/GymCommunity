@@ -14,6 +14,20 @@
         @method('PUT')
     @endif
 
+    @if (session('error'))
+        <div role="alert" class="alert alert-error mb-6 text-white">
+            <i data-lucide="alert-circle" class="w-6 h-6"></i>
+            <span>{{ session('error') }}</span>
+        </div>
+    @endif
+
+    @if (session('success'))
+        <div role="alert" class="alert alert-success mb-6 text-white">
+            <i data-lucide="check-circle" class="w-6 h-6"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
     {{-- form fields --}}
     <x-artikelen.shared.form-fields :post="$post"/>
 

@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Posts\PostCreateRequest;
-use App\Http\Requests\Posts\PostUpdateRequest;
+use App\Enums\PostCategoryEnum;
+use App\Http\Requests\Posts\PostRequest;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Facades\Storage;
@@ -51,7 +51,7 @@ class PostController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(PostCreateRequest $request): RedirectResponse
+    public function store(PostRequest $request): RedirectResponse
     {
         $isAuthenticated = false;
         $inputIsValidated = false;
@@ -66,7 +66,7 @@ class PostController extends Controller
         }
 
         $validatedData = $request->validated();
-        if (!empty($validatedData)) {
+        if (! empty($validatedData)) {
             $inputIsValidated = true;
         }
 
@@ -158,11 +158,12 @@ class PostController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(PostUpdateRequest $request, Post $post): RedirectResponse
+    public function update(PostRequest $request, Post $post): RedirectResponse
     {
         $isAuthenticated = false;
         $hasPolicyApproval = false;
         $inputIsValidated = false;
+        $isNewInformation = false;
 
         $user = $request->user();
         if ($user !== null) {
@@ -174,12 +175,37 @@ class PostController extends Controller
         }
 
         $validatedData = $request->validated();
-        if (!empty($validatedData)) {
+        if (! empty($validatedData)) {
             $inputIsValidated = true;
         }
 
+        $hasNewImage = $request->hasFile('image');
+
+        foreach (['title', 'body', 'category'] as $field) {
+            /** @var PostCategoryEnum|string $currentValue */
+            $currentValue = $post->$field;
+
+            $comparisonValue = ($currentValue instanceof PostCategoryEnum)
+                ? $currentValue->value
+                : $currentValue;
+
+            if ($comparisonValue !== $validatedData[$field]) {
+                $isNewInformation = true;
+                break;
+            }
+        }
+
+        if ($hasNewImage) {
+            $isNewInformation = true;
+        }
+
+        if (! $isNewInformation) {
+            return redirect()->back()
+                ->with('error', 'Je hebt niets gewijzigd.');
+        }
+
         if ($isAuthenticated && $hasPolicyApproval && $inputIsValidated) {
-            if ($request->hasFile('image')) {
+            if ($hasNewImage) {
                 $oldImage = $post->image;
                 $oldImage && Storage::disk('public')->delete($oldImage);
 

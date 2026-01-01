@@ -113,4 +113,92 @@ describe('Unhappy Flow', function () {
 
         $response->assertSessionHasErrors(['category']);
     });
+    it('treats complex SQL injection payloads as plain text', function (string $payload) {
+        $user = User::factory()->create();
+        $permission = Permission::create(['name' => PermissionEnum::CREATE_POSTS]);
+        $role = Role::create(['name' => RoleEnum::TRAINER]);
+        $role->permissions()->attach($permission);
+        $user->roles()->attach($role);
+
+        $response = $this->actingAs($user)->post(route('artikelen.store'), [
+            'title' => $payload,
+            'body' => str_repeat('Valid body text ', 10),
+            'category' => PostCategoryEnum::KRACHT->value,
+        ]);
+
+        $response->assertRedirect(route('artikelen.index'));
+        $this->assertDatabaseHas('posts', [
+            'title' => $payload,
+        ]);
+    })->with([
+        ["'; DROP TABLE posts; --"],
+        ["' OR 1=1; --"],
+        ["admin' --"],
+        ["' UNION ALL SELECT NULL, NULL, NULL --"],
+        ["'; EXEC xp_cmdshell('dir'); --"],
+        ["' OR '1'='1"],
+    ]);
+
+    it('treats Command injection payloads as plain text', function () {
+        $user = User::factory()->create();
+        $permission = Permission::create(['name' => PermissionEnum::CREATE_POSTS]);
+        $role = Role::create(['name' => RoleEnum::TRAINER]);
+        $role->permissions()->attach($permission);
+        $user->roles()->attach($role);
+
+        $payload = '; rm -rf /';
+
+        $response = $this->actingAs($user)->post(route('artikelen.store'), [
+            'title' => $payload,
+            'body' => str_repeat('Valid body text ', 10),
+            'category' => PostCategoryEnum::KRACHT->value,
+        ]);
+
+        $response->assertRedirect(route('artikelen.index'));
+        $this->assertDatabaseHas('posts', [
+            'title' => $payload,
+        ]);
+    });
+
+    it('treats SSTI (Server Side Template Injection) payloads as plain text', function () {
+        $user = User::factory()->create();
+        $permission = Permission::create(['name' => PermissionEnum::CREATE_POSTS]);
+        $role = Role::create(['name' => RoleEnum::TRAINER]);
+        $role->permissions()->attach($permission);
+        $user->roles()->attach($role);
+
+        $payload = '{{ 7*7 }}';
+
+        $response = $this->actingAs($user)->post(route('artikelen.store'), [
+            'title' => $payload,
+            'body' => str_repeat('Valid body text ', 10),
+            'category' => PostCategoryEnum::KRACHT->value,
+        ]);
+
+        $response->assertRedirect(route('artikelen.index'));
+        $this->assertDatabaseHas('posts', [
+            'title' => $payload,
+        ]);
+    });
+
+    it('treats LDAP/XPath injection payloads as plain text', function () {
+        $user = User::factory()->create();
+        $permission = Permission::create(['name' => PermissionEnum::CREATE_POSTS]);
+        $role = Role::create(['name' => RoleEnum::TRAINER]);
+        $role->permissions()->attach($permission);
+        $user->roles()->attach($role);
+
+        $payload = 'admin*)(|(password=*))';
+
+        $response = $this->actingAs($user)->post(route('artikelen.store'), [
+            'title' => $payload,
+            'body' => str_repeat('Valid body text ', 10),
+            'category' => PostCategoryEnum::KRACHT->value,
+        ]);
+
+        $response->assertRedirect(route('artikelen.index'));
+        $this->assertDatabaseHas('posts', [
+            'title' => $payload,
+        ]);
+    });
 });

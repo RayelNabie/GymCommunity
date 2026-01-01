@@ -46,4 +46,33 @@ describe('Unhappy Flow', function () {
         $response->assertSee('Nog geen artikelen');
         $response->assertSee('De community is nog even aan het opwarmen. Wees de eerste die zijn kennis deelt over krachttraining of voeding!');
     });
+    it('escapes HTML in the post titles and bodies (XSS protection)', function () {
+        $user = User::factory()->create();
+        $xssPayload = '<script>alert("xss")</script>';
+
+        Post::factory()->create([
+            'user_id' => $user->user_id,
+            'title' => 'Title '.$xssPayload,
+            'body' => 'Body '.$xssPayload,
+        ]);
+
+        $response = $this->get(route('artikelen.index'));
+
+        // Assert we see the escaped version
+        $response->assertSee(e($xssPayload), false);
+
+        // Assert we do NOT see the raw unescaped HTML tag
+        $response->assertDontSee($xssPayload, false);
+    });
+
+    it('handles SQL injection in pagination parameters gracefully', function () {
+        Post::factory()->count(20)->create();
+
+        // Try to inject SQL into the page parameter
+        $response = $this->get(route('artikelen.index', ['page' => "1' OR '1'='1"]));
+
+        // Laravel's paginator casts page to int, so this should just load page 1 or fail validation safely
+        // It definitely shouldn't crash with 500 or execute SQL
+        $response->assertStatus(200);
+    });
 });

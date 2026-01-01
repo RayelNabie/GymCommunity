@@ -326,4 +326,84 @@ describe('Unhappy Flow', function () {
 
         $response->assertSessionHasErrors('image');
     });
+    it('treats complex SQL injection payloads as plain text', function (string $payload) {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->user_id]);
+
+        $response = $this->actingAs($user)->put(route('artikelen.update', $post), [
+            'title' => $payload,
+            'body' => $post->body,
+            'category' => $post->category->value,
+        ]);
+
+        $response->assertRedirect(route('artikelen.index'));
+        $this->assertDatabaseHas('posts', [
+            'post_id' => $post->post_id,
+            'title' => $payload,
+        ]);
+    })->with([
+        ["'; DROP TABLE posts; --"],
+        ["' OR 1=1; --"],
+        ["admin' --"],
+        ["' UNION ALL SELECT NULL, NULL, NULL --"],
+        ["'; EXEC xp_cmdshell('dir'); --"],
+        ["' OR '1'='1"],
+    ]);
+
+    it('treats Command injection payloads as plain text', function () {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->user_id]);
+
+        $payload = '; rm -rf /';
+
+        $response = $this->actingAs($user)->put(route('artikelen.update', $post), [
+            'title' => $payload,
+            'body' => $post->body,
+            'category' => $post->category->value,
+        ]);
+
+        $response->assertRedirect(route('artikelen.index'));
+        $this->assertDatabaseHas('posts', [
+            'post_id' => $post->post_id,
+            'title' => $payload,
+        ]);
+    });
+
+    it('treats SSTI (Server Side Template Injection) payloads as plain text', function () {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->user_id]);
+
+        $payload = '{{ 7*7 }}';
+
+        $response = $this->actingAs($user)->put(route('artikelen.update', $post), [
+            'title' => $payload,
+            'body' => $post->body,
+            'category' => $post->category->value,
+        ]);
+
+        $response->assertRedirect(route('artikelen.index'));
+        $this->assertDatabaseHas('posts', [
+            'post_id' => $post->post_id,
+            'title' => $payload,
+        ]);
+    });
+
+    it('treats LDAP/XPath injection payloads as plain text', function () {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->user_id]);
+
+        $payload = 'admin*)(|(password=*))';
+
+        $response = $this->actingAs($user)->put(route('artikelen.update', $post), [
+            'title' => $payload,
+            'body' => $post->body,
+            'category' => $post->category->value,
+        ]);
+
+        $response->assertRedirect(route('artikelen.index'));
+        $this->assertDatabaseHas('posts', [
+            'post_id' => $post->post_id,
+            'title' => $payload,
+        ]);
+    });
 });

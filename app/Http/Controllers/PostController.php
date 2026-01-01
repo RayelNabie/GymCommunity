@@ -71,12 +71,18 @@ class PostController extends Controller
         }
 
         if ($hasPolicyApproval && $inputIsValidated && $isAuthenticated) {
+            $imagePath = null;
+            if ($request->hasFile('image')) {
+                $imagePath = $request->file('image')->store('posts', 'public');
+            }
+
             /** @var array{title: string, body: string, category: string} $validatedData */
             $request->user()->posts()->create([
                 'title' => $validatedData['title'],
                 'body' => $validatedData['body'],
                 'category' => $validatedData['category'],
                 'slug' => Str::slug($validatedData['title']),
+                'image' => $imagePath,
             ]);
 
             return redirect()->route('artikelen.index')

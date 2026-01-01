@@ -40,7 +40,7 @@ describe('Unhappy Flow', function () {
         $response = $this->get(route('artikelen.index'));
 
         $response->assertStatus(200);
-        $response->assertSee('Geen posts gevonden');
-        $response->assertSee('Er zijn nog geen posts geplaatst');
+        $response->assertSee('Nog geen artikelen');
+        $response->assertSee('De community is nog even aan het opwarmen. Wees de eerste die zijn kennis deelt over krachttraining of voeding!');
     });
 });

@@ -228,11 +228,35 @@ class PostController extends Controller
 
         abort(403, 'Wijziging niet toegestaan.');
     }
-    //    /**
-    //     * Remove the specified resource from storage.
-    //     */
-    //    public function destroy(string $id)
-    //    {
-    //        //
-    //    }
+
+    /**
+     * Remove the specified resource from storage.
+     */
+    public function destroy(Post $post): RedirectResponse
+    {
+        $isAuthenticated = false;
+        $hasPolicyApproval = false;
+
+        $user = auth()->user();
+        if ($user !== null) {
+            $isAuthenticated = true;
+        }
+
+        if ($isAuthenticated && $user->can('delete', $post)) {
+            $hasPolicyApproval = true;
+        }
+
+        if ($isAuthenticated && $hasPolicyApproval) {
+            if ($post->image) {
+                Storage::disk('public')->delete($post->image);
+            }
+
+            $post->delete();
+
+            return redirect()->route('artikelen.index')
+                ->with('success', 'Dit artikel is definitief verwijderd.');
+        }
+
+        abort(403, 'Je hebt geen rechten om dit artikel te verwijderen.');
+    }
 }

@@ -21,6 +21,13 @@
         @endcan
     </header>
 
+    @if (session('success'))
+        <div role="alert" class="alert alert-success mb-8 text-white font-bold border-none bg-green-600/90 backdrop-blur-sm">
+            <i data-lucide="check-circle" class="w-6 h-6"></i>
+            <span>{{ session('success') }}</span>
+        </div>
+    @endif
+
     {{-- Articles --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         @forelse($posts as $post)

@@ -92,22 +92,17 @@ describe('Unhappy Flow', function () {
 
     it('validates that the category must be a valid Enum value', function () {
         $user = User::factory()->create();
-        $permission = Permission::firstOrCreate([
+        $permission = Permission::create([
             'name' => PermissionEnum::CREATE_POSTS,
-        ], [
             'description' => PermissionEnum::CREATE_POSTS->description(),
         ]);
 
-        $role = Role::firstOrCreate([
+        $role = Role::create([
             'name' => RoleEnum::TRAINER,
-        ], [
             'description' => RoleEnum::TRAINER->label(),
         ]);
 
-        if (! $role->permissions()->where('permissions.permission_id', $permission->permission_id)->exists()) {
-            $role->permissions()->attach($permission);
-        }
-
+        $role->permissions()->attach($permission);
         $user->roles()->attach($role);
 
         $response = $this->actingAs($user)->post(route('artikelen.store'), [

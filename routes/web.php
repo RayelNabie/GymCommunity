@@ -8,8 +8,13 @@ Route::get('/', function () {
     return view('landing_page.index');
 });
 
-Route::get('/artikelen', [PostController::class, 'index'])->name('artikelen.index');
-Route::post('/artikelen', [PostController::class, 'store'])->middleware('auth')->name('artikelen.store');
+Route::prefix('artikelen')->name('artikelen.')->group(function () {
+    Route::get('/', [PostController::class, 'index'])->name('index');
+    Route::middleware('auth')->group(function () {
+        Route::get('/create', [PostController::class, 'create'])->name('create');
+        Route::post('/', [PostController::class, 'store'])->name('store');
+    });
+});
 
 Route::get('/dashboard', function () {
     return view('dashboard');

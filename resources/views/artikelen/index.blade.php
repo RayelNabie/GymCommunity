@@ -7,9 +7,8 @@
             <h1 class="text-5xl md:text-6xl font-black text-white tracking-tighter uppercase italic">
                 Alle <span class="text-gym-primary">Artikelen</span>
             </h1>
-            <p class="text-gray-400 text-lg max-w-2xl leading-relaxed">
-                Ontdek de laatste inzichten, trainingstips en wetenschappelijke analyses van onze community experts.
-            </p>
+            {{-- search bar--}}
+            <x-artikelen.index.category-filter :active-category="$activeCategory" :current-filters="$currentFilters"/>
         </div>
 
         @can('create', Post::class)

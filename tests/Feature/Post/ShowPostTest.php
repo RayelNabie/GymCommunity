@@ -50,6 +50,19 @@ describe('Happy Flow', function () {
         $response->assertViewHas('canEdit', false);
         $response->assertViewHas('canDelete', false);
     });
+
+    it('allows viewing a post with query parameters in the URL', function () {
+        $user = User::factory()->create();
+        $post = Post::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('artikelen.show', ['post' => $post, 'category' => 'kracht', 'search' => 'test']));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('artikelen.[slug]');
+        $response->assertViewHas('post', function (Post $viewPost) use ($post) {
+            return $viewPost->post_id === $post->post_id;
+        });
+    });
 });
 
 describe('Unhappy Flow', function () {

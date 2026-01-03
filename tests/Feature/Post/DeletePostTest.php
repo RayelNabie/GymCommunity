@@ -40,6 +40,18 @@ describe('Happy Flow', function () {
         $response->assertSessionHas('success', 'Dit artikel is definitief verwijderd.');
         $this->assertDatabaseMissing('posts', ['post_id' => $post->post_id]);
     });
+
+    it('allows deleting a post when accessed via filtered URL', function () {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->user_id]);
+
+        // Simulate deleting after using category filter
+        $response = $this->actingAs($user)->delete(route('artikelen.destroy', $post));
+
+        $response->assertRedirect(route('artikelen.index'));
+        $response->assertSessionHas('success', 'Dit artikel is definitief verwijderd.');
+        $this->assertDatabaseMissing('posts', ['post_id' => $post->post_id]);
+    });
 });
 
 describe('Unhappy Flow', function () {

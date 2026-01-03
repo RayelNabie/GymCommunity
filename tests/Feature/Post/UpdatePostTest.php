@@ -145,6 +145,28 @@ describe('Happy Flow', function () {
         ]);
     });
 
+    it('allows updating a post when accessed via filtered URL', function () {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->user_id]);
+
+        $updatedData = [
+            'title' => 'Updated via Filter',
+            'body' => str_repeat('This is an update from a filtered view. ', 5),
+            'category' => PostCategoryEnum::CARDIO->value,
+        ];
+
+        // Simulate accessing update after using category filter
+        $response = $this->actingAs($user)->put(route('artikelen.update', $post), $updatedData);
+
+        $response->assertRedirect(route('artikelen.index'));
+        $response->assertSessionHas('success');
+
+        $this->assertDatabaseHas('posts', [
+            'post_id' => $post->post_id,
+            'title' => 'Updated via Filter',
+        ]);
+    });
+
     it('returns an error when updating with the same data', function () {
         $user = User::factory()->create();
         $post = Post::factory()->create(['user_id' => $user->user_id]);

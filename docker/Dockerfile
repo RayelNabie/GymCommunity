@@ -7,7 +7,6 @@ FROM ubuntu:24.04
 ARG WWWGROUP
 ARG NODE_VERSION=22
 ARG MYSQL_CLIENT="mysql-client"
-ENV NODE_OPTIONS="--max-old-space-size=4096"
 
 WORKDIR /var/www/html
 

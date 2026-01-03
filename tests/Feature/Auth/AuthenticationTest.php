@@ -2,40 +2,63 @@
 
 use App\Models\User;
 
-test('login screen can be rendered', function () {
-    $response = $this->get('/login');
+describe('Happy Flow', function () {
+    it('can render the login screen', function () {
+        $response = $this->get('/inloggen');
 
-    $response->assertStatus(200);
+        $response->assertStatus(200);
+    });
+
+    it('allows users to authenticate using the login screen', function () {
+        $user = User::factory()->create();
+
+        $response = $this->post('/inloggen', [
+            'email' => $user->email,
+            'password' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+    });
+
+    it('allows users to logout', function () {
+        $user = User::factory()->create();
+
+        $response = $this->actingAs($user)->post('/uitloggen');
+
+        $this->assertGuest();
+        $response->assertRedirect('/');
+    });
 });
 
-test('users can authenticate using the login screen', function () {
-    $user = User::factory()->create();
+describe('Unhappy Flow', function () {
+    it('does not authenticate users with invalid password', function () {
+        $user = User::factory()->create();
 
-    $response = $this->post('/login', [
-        'email' => $user->email,
-        'password' => 'password',
-    ]);
+        $this->post('/inloggen', [
+            'email' => $user->email,
+            'password' => 'wrong-password',
+        ]);
 
-    $this->assertAuthenticated();
-    $response->assertRedirect(route('dashboard', absolute: false));
-});
+        $this->assertGuest();
+    });
 
-test('users can not authenticate with invalid password', function () {
-    $user = User::factory()->create();
+    it('handles SQL injection attempts in email field safely', function () {
+        $this->post('/inloggen', [
+            'email' => "' OR '1'='1",
+            'password' => 'password',
+        ]);
 
-    $this->post('/login', [
-        'email' => $user->email,
-        'password' => 'wrong-password',
-    ]);
+        $this->assertGuest();
+    });
 
-    $this->assertGuest();
-});
+    it('handles XSS attempts in email field safely', function () {
+        $response = $this->post('/inloggen', [
+            'email' => '<script>alert("XSS")</script>',
+            'password' => 'password',
+        ]);
 
-test('users can logout', function () {
-    $user = User::factory()->create();
-
-    $response = $this->actingAs($user)->post('/logout');
-
-    $this->assertGuest();
-    $response->assertRedirect('/');
+        $this->assertGuest();
+        $response->assertDontSee('<script>alert("XSS")</script>', false);
+    });
 });

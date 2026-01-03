@@ -4,57 +4,73 @@ use App\Models\User;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Support\Facades\Notification;
 
-test('reset password link screen can be rendered', function () {
-    $response = $this->get('/forgot-password');
-
-    $response->assertStatus(200);
-});
-
-test('reset password link can be requested', function () {
-    Notification::fake();
-
-    $user = User::factory()->create();
-
-    $this->post('/forgot-password', ['email' => $user->email]);
-
-    Notification::assertSentTo($user, ResetPassword::class);
-});
-
-test('reset password screen can be rendered', function () {
-    Notification::fake();
-
-    $user = User::factory()->create();
-
-    $this->post('/forgot-password', ['email' => $user->email]);
-
-    Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
-        $response = $this->get('/reset-password/'.$notification->token);
+describe('Happy Flow', function () {
+    it('can render the reset password link screen', function () {
+        $response = $this->get('/wachtwoord-vergeten');
 
         $response->assertStatus(200);
+    });
 
-        return true;
+    it('can request a reset password link', function () {
+        Notification::fake();
+
+        $user = User::factory()->create();
+
+        $this->post('/wachtwoord-vergeten', ['email' => $user->email]);
+
+        Notification::assertSentTo($user, ResetPassword::class);
+    });
+
+    it('can render the reset password screen', function () {
+        Notification::fake();
+
+        $user = User::factory()->create();
+
+        $this->post('/wachtwoord-vergeten', ['email' => $user->email]);
+
+        Notification::assertSentTo($user, ResetPassword::class, function ($notification) {
+            $response = $this->get('/wachtwoord-resetten/'.$notification->token);
+
+            $response->assertStatus(200);
+
+            return true;
+        });
+    });
+
+    it('can reset password with valid token', function () {
+        Notification::fake();
+
+        $user = User::factory()->create();
+
+        $this->post('/wachtwoord-vergeten', ['email' => $user->email]);
+
+        Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
+            $response = $this->post('/wachtwoord-resetten', [
+                'token' => $notification->token,
+                'email' => $user->email,
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ]);
+
+            $response
+                ->assertSessionHasNoErrors()
+                ->assertRedirect(route('login'));
+
+            return true;
+        });
     });
 });
 
-test('password can be reset with valid token', function () {
-    Notification::fake();
+describe('Unhappy Flow', function () {
+    it('cannot request reset link with invalid email', function () {
+        $response = $this->post('/wachtwoord-vergeten', ['email' => 'invalid-email']);
+        
+        $response->assertSessionHasErrors(['email']);
+    });
 
-    $user = User::factory()->create();
-
-    $this->post('/forgot-password', ['email' => $user->email]);
-
-    Notification::assertSentTo($user, ResetPassword::class, function ($notification) use ($user) {
-        $response = $this->post('/reset-password', [
-            'token' => $notification->token,
-            'email' => $user->email,
-            'password' => 'password',
-            'password_confirmation' => 'password',
-        ]);
-
-        $response
-            ->assertSessionHasNoErrors()
-            ->assertRedirect(route('login'));
-
-        return true;
+    it('handles SQL injection in email for reset link', function () {
+        $response = $this->post('/wachtwoord-vergeten', ['email' => "' OR '1'='1"]);
+        
+        $response->assertSessionHasErrors(['email']);
     });
 });

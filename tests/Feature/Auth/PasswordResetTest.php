@@ -64,13 +64,13 @@ describe('Happy Flow', function () {
 describe('Unhappy Flow', function () {
     it('cannot request reset link with invalid email', function () {
         $response = $this->post('/wachtwoord-vergeten', ['email' => 'invalid-email']);
-        
+
         $response->assertSessionHasErrors(['email']);
     });
 
     it('handles SQL injection in email for reset link', function () {
         $response = $this->post('/wachtwoord-vergeten', ['email' => "' OR '1'='1"]);
-        
+
         $response->assertSessionHasErrors(['email']);
     });
 });

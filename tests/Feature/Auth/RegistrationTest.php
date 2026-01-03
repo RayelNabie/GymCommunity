@@ -43,7 +43,7 @@ describe('Unhappy Flow', function () {
 
         // Should fail validation or just create a user with weird name, but definitely not execute SQL
         // Laravel validation usually catches invalid emails.
-        $response->assertSessionHasErrors(['email']); 
+        $response->assertSessionHasErrors(['email']);
         $this->assertGuest();
     });
 
@@ -56,15 +56,15 @@ describe('Unhappy Flow', function () {
         ]);
 
         // If it registers, we check if the name is escaped when displayed (e.g. on dashboard)
-        // But here we just check if it redirects or errors. 
+        // But here we just check if it redirects or errors.
         // If it succeeds, we should check the database or subsequent page view.
-        
+
         if ($response->status() === 302) {
-             $this->assertAuthenticated();
-             $user = auth()->user();
-             expect($user->name)->toBe('<script>alert("XSS")</script>');
-             // The protection happens at output (Blade {{ }}), not necessarily at input.
-             // But let's assume we want to allow it but ensure it's safe.
+            $this->assertAuthenticated();
+            $user = auth()->user();
+            expect($user->name)->toBe('<script>alert("XSS")</script>');
+            // The protection happens at output (Blade {{ }}), not necessarily at input.
+            // But let's assume we want to allow it but ensure it's safe.
         }
     });
 });

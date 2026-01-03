@@ -1,11 +1,11 @@
-import { defineConfig } from 'vite';
+import {defineConfig} from 'vite';
 import laravel from 'laravel-vite-plugin';
 
 export default defineConfig({
     plugins: [
         laravel({
             input: ['resources/css/app.css', 'resources/js/app.js'],
-            refresh: true,
+            refresh: ['resources/views/**/*.blade.php'],
         }),
     ],
     css: {
@@ -20,7 +20,7 @@ export default defineConfig({
         },
         watch: {
             usePolling: true,
-            interval: 1000,
+            interval: 2000,
             binaryInterval: 3000,
             ignored: [
                 '**/.git/**',
@@ -29,8 +29,16 @@ export default defineConfig({
                 '**/storage/**',
                 '**/public/**',
                 '**/database/**',
-                '**/tests/**'
+                '**/tests/**',
+                '**/bootstrap/cache/**',
+                '**/public/hot',
+                '**/.vite',
+                '**/public/build/**'
             ],
+            fs: {
+                strict: false,
+                allow: ['..']
+            }
         },
     },
 });

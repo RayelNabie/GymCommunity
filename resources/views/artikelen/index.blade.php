@@ -1,13 +1,14 @@
 @use('App\Models\Post')
 
 <x-app-layout title="Artikelen">
-    {{-- Header --}}
-    <header class="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-        <div class="space-y-4">
+    <header class="flex flex-col md:flex-row justify-between items-center md:items-end mb-16 gap-8">
+        <div class="space-y-6 w-full flex flex-col items-center md:items-start text-center md:text-left">
+
             <h1 class="text-5xl md:text-6xl font-black text-white tracking-tighter uppercase italic">
                 Alle <span class="text-gym-primary">Artikelen</span>
             </h1>
             {{-- search bar--}}
+            <x-artikelen.index.search-bar :active-category="$activeCategory" :current-filters="$currentFilters"/>
             <x-artikelen.index.category-filter :active-category="$activeCategory" :current-filters="$currentFilters"/>
         </div>
 

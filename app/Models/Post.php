@@ -11,6 +11,17 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/**
+ * @property string $post_id
+ * @property string $user_id
+ * @property string $title
+ * @property string $slug
+ * @property string $body
+ * @property PostCategoryEnum $category
+ * @property string|null $image
+ *
+ * @method static Builder<Post> filter(array $filters)
+ */
 class Post extends Model
 {
     /** @use HasFactory<Postfactory> */
@@ -75,13 +86,13 @@ class Post extends Model
      * Scope the query to filter posts based on category and search terms.
      *
      * @param  Builder<Post>  $query
-     * @param  array{category?: string, search?: string}  $filters
+     * @param  array{category?: string, search?: string, sort?: string}  $validated
      */
     #[Scope]
-    protected function filter(Builder $query, array $filters): void
+    protected function filter(Builder $query, array $validated): void
     {
-        if (! empty($filters['category'])) {
-            $categoryValue = $filters['category'];
+        if (! empty($validated['category'])) {
+            $categoryValue = $validated['category'];
             $query->where('category', $categoryValue);
         }
     }

@@ -3,9 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Enums\PostCategoryEnum;
+use App\Http\Requests\Posts\FilterRequest;
 use App\Http\Requests\Posts\PostRequest;
 use App\Models\Post;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -15,12 +18,24 @@ class PostController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index(): View
+    public function index(FilterRequest $request): View
     {
+        /** @var array{category?: string, search?: string} $validated */
+        $validated = $request->validated();
 
-        $posts = Post::with('user')->latest()->paginate(15);
+        /** @var Builder<Post> $postsQuery */
+        $postsQuery = Post::query()->with('user');
 
-        return view('artikelen.index', ['posts' => $posts]);
+        /** @var Post $postsQuery */
+        return view('artikelen.index', [
+            'posts' => $postsQuery->filter($validated)
+                ->latest()
+                ->paginate(15)
+                ->withQueryString(),
+
+            'activeCategory' => $validated['category'] ?? '',
+            'currentFilters' => Arr::only($validated, ['search', 'sort']),
+        ]);
     }
 
     /**

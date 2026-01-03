@@ -20,7 +20,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property PostCategoryEnum $category
  * @property string|null $image
  *
- * @method static Builder<Post> filter(array $filters)
+ * @phpstan-type FilterInputs array{category?: string, search?: string, sort?: string}
  */
 class Post extends Model
 {
@@ -85,15 +85,15 @@ class Post extends Model
     /**
      * Scope the query to filter posts based on category and search terms.
      *
-     * @param  Builder<Post>  $query
+     * @param  Builder<Post>  $postsQuery
      * @param  array{category?: string, search?: string, sort?: string}  $validated
      */
     #[Scope]
-    protected function filter(Builder $query, array $validated): void
+    protected function filter(Builder $postsQuery, array $validated): void
     {
         if (! empty($validated['category'])) {
             $categoryValue = $validated['category'];
-            $query->where('category', $categoryValue);
+            $postsQuery->where('category', $categoryValue);
         }
     }
 }

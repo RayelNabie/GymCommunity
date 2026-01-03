@@ -101,6 +101,3 @@ describe('Sad Flow', function () {
         $response->assertDontSee($xssPayload, false);
     });
 });
-
-
-

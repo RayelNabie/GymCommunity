@@ -11,7 +11,7 @@ describe('Happy Flow', function () {
         $response = $this->actingAs($user)->get(route('artikelen.show', $post));
 
         $response->assertStatus(200);
-        $response->assertViewIs('artikelen.show');
+        $response->assertViewIs('artikelen.[slug]');
         $response->assertViewHas('post', function (Post $viewPost) use ($post) {
             return $viewPost->post_id === $post->post_id;
         });

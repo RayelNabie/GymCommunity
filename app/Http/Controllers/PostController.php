@@ -121,7 +121,7 @@ class PostController extends Controller
         }
 
         if ($isPublished && $canView) {
-            return view('artikelen.show', [
+            return view('artikelen.[slug]', [
                 'post' => $post,
                 'canEdit' => $canEdit,
                 'canDelete' => $canDelete,

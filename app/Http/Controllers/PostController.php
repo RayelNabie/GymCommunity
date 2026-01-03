@@ -23,8 +23,11 @@ class PostController extends Controller
 
         $posts = Post::query()
             ->with('user')
+            ->category($validated['category'] ?? null)
+            ->search($validated['search'] ?? null)
             ->latest()
-            ->paginate(15);
+            ->paginate(15)
+            ->withQueryString();
 
         return view('artikelen.index', [
             'posts' => $posts,

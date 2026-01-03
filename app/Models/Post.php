@@ -21,6 +21,10 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $image
  *
  * @phpstan-type FilterInputs array{category?: string, search?: string, sort?: string}
+ * @method static Builder|Post myarticle(bool $active = false)
+ * @method static Builder|Post search(?string $term)
+ * @method static Builder|Post category(?string $category)
+ * /
  */
 class Post extends Model
 {
@@ -92,8 +96,8 @@ class Post extends Model
     {
         if ($term) {
             $query->where(function (Builder $subQuery) use ($term) {
-                $subQuery->where('title', 'like', "%{$term}%")
-                    ->orWhere('body', 'like', "%{$term}%");
+                $subQuery->where('title', 'like', "%$term%")
+                    ->orWhere('body', 'like', "%$term%");
             });
         }
     }

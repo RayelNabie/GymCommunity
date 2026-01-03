@@ -1,26 +1,91 @@
 #!/usr/bin/env bash
 
-if [ "$SUPERVISOR_PHP_USER" != "root" ] && [ "$SUPERVISOR_PHP_USER" != "sail" ]; then
-    echo "You should set SUPERVISOR_PHP_USER to either 'sail' or 'root'."
+# -----------------------------------------------------------------------------
+# Container Entrypoint Script
+# -----------------------------------------------------------------------------
+# Purpose:
+# 1. Initialize the container environment (permissions, UID mapping).
+# 2. Handoff execution to the process manager (Supervisor) or a CLI command.
+#
+# Architecture Note (Hybrid Setup):
+# - Infrastructure (Supervisor) runs as ROOT to manage PID files and logs.
+# - Application (PHP/Laravel) runs as SAIL to limit security exposure.
+# -----------------------------------------------------------------------------
+
+# Safety Mechanisms:
+# -e: Exit immediately on error.
+# -u: Fail on undefined variables.
+# -o pipefail: Fail if any command in a pipe chain fails.
+set -euo pipefail
+
+# -----------------------------------------------------------------------------
+# Configuration Validation
+# -----------------------------------------------------------------------------
+
+if [[ "${SUPERVISOR_PHP_USER:-}" != "root" && "${SUPERVISOR_PHP_USER:-}" != "sail" ]]; then
+    echo "ERROR: SUPERVISOR_PHP_USER must be set to either 'sail' or 'root'." >&2
     exit 1
 fi
 
-if [ ! -z "$WWWUSER" ]; then
-    usermod -u "$WWWUSER" sail
+# -----------------------------------------------------------------------------
+# Root-Level Initialization
+# -----------------------------------------------------------------------------
+# These operations require root privileges and must complete before dropping user.
+
+if [ "$(id -u)" -eq 0 ]; then
+
+    # 1. UID Mapping (Linux Host Compatibility)
+    # Match the internal 'sail' UID with the host user's UID (WWWUSER).
+    # This prevents 'Permission Denied' errors when writing to mounted Docker volumes.
+    if [[ -n "${WWWUSER:-}" ]]; then
+        current_uid=$(id -u sail)
+        if [ "$current_uid" -ne "$WWWUSER" ]; then
+            echo "INFO: Mapping 'sail' user ID from $current_uid to $WWWUSER..."
+            usermod -u "$WWWUSER" sail
+        fi
+    fi
+
+    # 2. Directory Provisioning
+    # - /.composer:             Required for composer cache/config.
+    # - /var/www/...:           Standard Laravel writable directories.
+    # - /var/log/supervisor:    Required for Supervisor (Running as Root).
+    mkdir -p /.composer \
+             /var/www/html/storage \
+             /var/www/html/bootstrap/cache \
+             /var/log/supervisor
+
+    # 3. Application Permissions
+    # We grant ownership of APPLICATION directories to the 'sail' user.
+    # CRITICAL: We do NOT chown /var/log/supervisor. Since Supervisor runs as root,
+    # it requires root ownership (or write access) to that directory.
+    echo "INFO: Enforcing ownership and permissions on application directories..."
+    chown -R sail:sail /.composer \
+                       /var/www/html/storage \
+                       /var/www/html/bootstrap/cache
+
+    # 4. Hardening
+    # Restrict access to the composer directory.
+    chmod -R ug+rwX,o-rwx /.composer
 fi
 
-if [ ! -d /.composer ]; then
-    mkdir /.composer
-fi
+# -----------------------------------------------------------------------------
+# Execution Handoff
+# -----------------------------------------------------------------------------
 
-chmod -R ugo+rw /.composer
-
+# Scenario 1: CLI Passthrough (e.g., 'docker compose exec app php artisan ...')
+# If arguments are provided, we assume a manual command.
+# We drop privileges to 'sail' unless explicitly configured otherwise.
 if [ $# -gt 0 ]; then
-    if [ "$SUPERVISOR_PHP_USER" = "root" ]; then
+    if [ "${SUPERVISOR_PHP_USER:-}" = "root" ]; then
         exec "$@"
     else
-        exec gosu "$WWWUSER" "$@"
+        exec gosu sail "$@"
     fi
+
+# Scenario 2: Default Boot (Process Manager)
+# If no arguments are provided, we start the main process manager.
+# Supervisor starts as ROOT (to handle logs/pids) and spawns PHP as SAIL.
 else
+    echo "INFO: Starting Supervisor..."
     exec /usr/bin/supervisord -c /etc/supervisor/conf.d/supervisord.conf
 fi

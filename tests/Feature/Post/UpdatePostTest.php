@@ -192,7 +192,7 @@ describe('Unhappy Flow', function () {
             'title' => 'Hacked Title',
         ]);
 
-        $response->assertRedirect('/login');
+        $response->assertRedirect('/inloggen');
     });
 
     it('returns 403 when a user tries to update another users post without permission', function () {

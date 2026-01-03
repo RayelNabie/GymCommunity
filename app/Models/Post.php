@@ -21,6 +21,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $image
  *
  * @phpstan-type FilterInputs array{category?: string, search?: string, sort?: string}
+ *
+ * @method static Builder|Post myarticle(bool $active = false)
+ * @method static Builder|Post search(?string $term)
+ * @method static Builder|Post category(?string $category)
+ *                                                         /
  */
 class Post extends Model
 {
@@ -83,25 +88,44 @@ class Post extends Model
     }
 
     /**
-     * Scope the query to filter posts based on category and search terms.
+     * Scope the query to filter posts based on search terms.
      *
      * @param  Builder<Post>  $query
-     * @param  array{category?: string, search?: string, sort?: string}  $filters
      */
     #[Scope]
-    protected function filter(Builder $query, array $filters): void
+    protected function search(Builder $query, ?string $term): void
     {
-        if (! empty($filters['category'])) {
-            $categoryValue = $filters['category'];
-            $query->where('category', $categoryValue);
-        }
-        if (! empty($filters['search'])) {
-            $searchTerm = $filters['search'];
-
-            $query->where(function (Builder $subQuery) use ($searchTerm) {
-                $subQuery->where('title', 'like', "%{$searchTerm}%")
-                    ->orWhere('body', 'like', "%{$searchTerm}%");
+        if ($term) {
+            $query->where(function (Builder $subQuery) use ($term) {
+                $subQuery->where('title', 'like', "%$term%")
+                    ->orWhere('body', 'like', "%$term%");
             });
+        }
+    }
+
+    /**
+     * Scope the query to filter posts based on category.
+     *
+     * @param  Builder<Post>  $query
+     */
+    #[Scope]
+    protected function category(Builder $query, ?string $category): void
+    {
+        if ($category) {
+            $query->where('category', $category);
+        }
+    }
+
+    /**
+     * Scope the query to filter posts based on user_id.
+     *
+     * @param  Builder<Post>  $query
+     */
+    #[Scope]
+    protected function myarticle(Builder $query, bool $active = false): void
+    {
+        if ($active && auth()->check()) {
+            $query->where('user_id', auth()->id());
         }
     }
 }

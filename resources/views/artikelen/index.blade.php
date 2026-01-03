@@ -31,7 +31,7 @@
     {{-- Articles --}}
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
         @forelse($posts as $post)
-            <x-artikelen.index.card :$post />
+            <x-shared.card :$post />
         @empty
             <div class="col-span-full">
                 <x-artikelen.index.no-articles

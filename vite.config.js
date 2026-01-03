@@ -18,27 +18,5 @@ export default defineConfig({
             host: 'localhost',
             port: Number(process.env.VITE_PORT) || 5173,
         },
-        watch: {
-            usePolling: true,
-            interval: 2000,
-            binaryInterval: 3000,
-            ignored: [
-                '**/.git/**',
-                '**/node_modules/**',
-                '**/vendor/**',
-                '**/storage/**',
-                '**/public/**',
-                '**/database/**',
-                '**/tests/**',
-                '**/bootstrap/cache/**',
-                '**/public/hot',
-                '**/.vite',
-                '**/public/build/**'
-            ],
-            fs: {
-                strict: false,
-                allow: ['..']
-            }
-        },
     },
 });

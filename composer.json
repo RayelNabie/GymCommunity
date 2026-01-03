@@ -15,11 +15,11 @@
     },
     "require-dev": {
         "fakerphp/faker": "^1.23",
+        "ion-bazan/composer-diff": "^1.13",
         "larastan/larastan": "^3.0",
         "laravel/breeze": "^2.3",
         "laravel/pail": "^1.2.2",
         "laravel/pint": "^1.24",
-        "laravel/sail": "^1.48",
         "mockery/mockery": "^1.6",
         "nunomaduro/collision": "^8.6",
         "pestphp/pest": "^4.1",
@@ -83,6 +83,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "allow-plugins": {
+            "ion-bazan/composer-diff": true,
             "pestphp/pest-plugin": true,
             "php-http/discovery": true
         }

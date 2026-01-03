@@ -85,15 +85,23 @@ class Post extends Model
     /**
      * Scope the query to filter posts based on category and search terms.
      *
-     * @param  Builder<Post>  $postsQuery
-     * @param  array{category?: string, search?: string, sort?: string}  $validated
+     * @param  Builder<Post>  $query
+     * @param  array{category?: string, search?: string, sort?: string}  $filters
      */
     #[Scope]
-    protected function filter(Builder $postsQuery, array $validated): void
+    protected function filter(Builder $query, array $filters): void
     {
-        if (! empty($validated['category'])) {
-            $categoryValue = $validated['category'];
-            $postsQuery->where('category', $categoryValue);
+        if (! empty($filters['category'])) {
+            $categoryValue = $filters['category'];
+            $query->where('category', $categoryValue);
+        }
+        if (! empty($filters['search'])) {
+            $searchTerm = $filters['search'];
+
+            $query->where(function (Builder $subQuery) use ($searchTerm) {
+                $subQuery->where('title', 'like', "%{$searchTerm}%")
+                    ->orWhere('body', 'like', "%{$searchTerm}%");
+            });
         }
     }
 }

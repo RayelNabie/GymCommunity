@@ -75,4 +75,16 @@ describe('Unhappy Flow', function () {
         // It definitely shouldn't crash with 500 or execute SQL
         $response->assertStatus(200);
     });
+
+    it('maintains query parameters when paginating', function () {
+        $user = User::factory()->create();
+        Post::factory()->count(20)->create(['user_id' => $user->user_id]);
+
+        $response = $this->get(route('artikelen.index', ['category' => 'kracht', 'search' => 'test', 'page' => 2]));
+
+        $response->assertStatus(200);
+        // Verify the query string is preserved in pagination links
+        $response->assertSee('category=kracht');
+        $response->assertSee('search=test');
+    });
 });

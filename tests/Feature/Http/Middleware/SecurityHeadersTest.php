@@ -2,7 +2,6 @@
 
 use App\Models\User;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Vite;
 
 describe('Happy Flow', function () {
     it('adds security headers to all key application routes in production', function (string $route, bool $requiresAuth) {
@@ -22,7 +21,7 @@ describe('Happy Flow', function () {
             ->assertHeader('Strict-Transport-Security', 'max-age=31536000; includeSubDomains')
             ->assertHeader('Permissions-Policy', 'autoplay=(), battery=(), cross-origin-isolated=(), execution-while-not-rendered=()')
             ->assertHeader('Content-Security-Policy');
-        
+
         // Check CSP content specifically for nonce
         $csp = $response->headers->get('Content-Security-Policy');
         expect($csp)->toContain("script-src 'nonce-")
@@ -74,7 +73,7 @@ describe('Local Environment', function () {
         $response = $this->get('/');
 
         $response->assertStatus(200);
-        
+
         // Headers should NOT be present
         expect($response->headers->has('Content-Security-Policy'))->toBeFalse()
             ->and($response->headers->has('Strict-Transport-Security'))->toBeFalse()

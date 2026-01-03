@@ -10,7 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 /**
  * Add security Headers to incoming requests
  *
- * @param Closure(Request): (Response) $next
+ * @param  Closure(Request): (Response)  $next
  */
 class SecurityHeaders
 {
@@ -53,7 +53,7 @@ class SecurityHeaders
         // Permissions Policy
         $response->headers->set(
             'Permissions-Policy',
-            "autoplay=(), battery=(), cross-origin-isolated=(), execution-while-not-rendered=()",
+            'autoplay=(), battery=(), cross-origin-isolated=(), execution-while-not-rendered=()',
             true
         );
 

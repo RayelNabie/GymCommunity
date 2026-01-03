@@ -6,9 +6,7 @@ use App\Enums\PostCategoryEnum;
 use App\Http\Requests\Posts\FilterRequest;
 use App\Http\Requests\Posts\PostRequest;
 use App\Models\Post;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\RedirectResponse;
-use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -23,18 +21,15 @@ class PostController extends Controller
         /** @var array{category?: string, search?: string} $validated */
         $validated = $request->validated();
 
-        /** @var Builder<Post> $postsQuery */
-        $postsQuery = Post::query()->with('user');
+        $posts = Post::query()
+            ->with('user')
+            ->latest()
+            ->paginate(15);
 
-        /** @var Post $postsQuery */
         return view('artikelen.index', [
-            'posts' => $postsQuery->filter($validated)
-                ->latest()
-                ->paginate(15)
-                ->withQueryString(),
-
+            'posts' => $posts,
             'activeCategory' => $validated['category'] ?? '',
-            'currentFilters' => Arr::only($validated, ['search', 'sort']),
+            'currentFilters' => $validated,
         ]);
     }
 
@@ -268,7 +263,7 @@ class PostController extends Controller
 
             $post->delete();
 
-            return redirect()->route('artikelen.index')
+            return redirect()->route('dashboard')
                 ->with('success', 'Dit artikel is definitief verwijderd.');
         }
 

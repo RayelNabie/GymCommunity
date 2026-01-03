@@ -7,22 +7,28 @@
                 <i data-lucide="menu" class="w-6 h-6"></i>
             </button>
         </div>
-        <a href="{{ url('/') }}" class="btn btn-ghost text-2xl font-bold text-gym-primary gap-2 hover:bg-gym-surface">
+        {{-- Veranderd naar route('home') --}}
+        <a href="{{ route('home') }}" class="btn btn-ghost text-2xl font-bold text-gym-primary gap-2 hover:bg-gym-surface">
             <i data-lucide="dumbbell" class="w-8 h-8"></i>
             <span class="underline hidden sm:inline">GymCommunity.</span>
         </a>
     </div>
+
     <nav class="navbar-center hidden lg:flex gap-8">
-        <a href="{{ url('/') }}"
-           class="text-base font-medium {{ request()->is('/') ? 'text-gym-primary' : 'text-gym-text-light hover:text-gym-primary' }} transition-colors">Home</a>
+        {{-- Gebruik routeIs voor actieve states --}}
+        <a href="{{ route('home') }}"
+           class="text-base font-medium {{ request()->routeIs('home') ? 'text-gym-primary' : 'text-gym-text-light hover:text-gym-primary' }} transition-colors">Home</a>
         <a href="{{ route('artikelen.index') }}"
            class="text-base font-medium {{ request()->routeIs('artikelen.index') ? 'text-gym-primary' : 'text-gym-text-light hover:text-gym-primary' }} transition-colors">Artikelen</a>
     </nav>
+
     <div class="navbar-end gap-2 hidden lg:flex">
         @if (Route::has('login'))
             @auth
-                <a href="{{ url('/dashboard') }}"
-                   class="btn btn-sm btn-outline btn-primary text-gym-secondary hover:bg-gym-primary hover:text-gym-background">Dashboard</a>
+                {{-- Verwezen naar de nieuwe dashboard route --}}
+                <a href="{{ route('dashboard') }}"
+                   class="btn btn-sm btn-outline btn-primary text-gym-secondary hover:bg-gym-primary hover:text-gym-background">Mijn Artikelen</a>
+
                 <form method="POST" action="{{ route('logout') }}" class="inline">
                     @csrf
                     <button type="submit"
@@ -34,109 +40,39 @@
                 <a href="{{ route('login') }}" class="btn btn-sm btn-ghost text-white hover:text-gym-primary">Log in</a>
                 @if (Route::has('register'))
                     <a href="{{ route('register') }}"
-                       class="btn btn-sm bg-gym-primary hover:bg-yellow-400 text-black border-none font-bold">Sign
-                        up</a>
+                       class="btn btn-sm bg-gym-primary hover:bg-yellow-400 text-black border-none font-bold">Sign up</a>
                 @endif
             @endauth
         @endif
     </div>
 
     <div x-show="mobileMenuOpen"
+         x-cloak
          @click.away="mobileMenuOpen = false"
-         class="absolute top-full left-0 w-full bg-gym-surface border-b border-gym-border shadow-xl lg:hidden flex flex-col p-4 gap-2"
-         style="display: none;">
-        <a href="{{ url('/') }}"
-           class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors {{ request()->is('/') ? 'text-gym-primary' : '' }}">Home</a>
+         class="absolute top-full left-0 w-full bg-gym-surface border-b border-gym-border shadow-xl lg:hidden flex flex-col p-4 gap-2">
+
+        <a href="{{ route('home') }}"
+           class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors {{ request()->routeIs('home') ? 'text-gym-primary' : '' }}">Home</a>
+
         <a href="{{ route('artikelen.index') }}"
            class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors {{ request()->routeIs('artikelen.index') ? 'text-gym-primary' : '' }}">Artikelen</a>
-        <a href="{{ url('/#features') }}"
-           class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Features</a>
 
         @if (Route::has('login'))
             <div class="h-px bg-gym-divider my-1"></div>
             @auth
-                <a href="{{ url('/dashboard') }}"
-                   class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Dashboard</a>
+                <a href="{{ route('dashboard') }}"
+                   class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors {{ request()->routeIs('dashboard') ? 'text-gym-primary' : '' }}">Mijn Artikelen</a>
+
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit"
-                            class="w-full text-left block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">
+                    <button type="submit" class="w-full text-left block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">
                         Uitloggen
                     </button>
                 </form>
             @else
-                <a href="{{ route('login') }}"
-                   class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Log
-                    in</a>
+                <a href="{{ route('login') }}" class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Log in</a>
                 @if (Route::has('register'))
-                    <a href="{{ route('register') }}"
-                       class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Sign
-                        up</a>
-                @endif
-            @endauth
-        @endif
-    </div>
-
-    <div x-show="mobileMenuOpen"
-         @click.away="mobileMenuOpen = false"
-         class="absolute top-full left-0 w-full bg-gym-surface border-b border-gym-border shadow-xl lg:hidden flex flex-col p-4 gap-2"
-         style="display: none;">
-        <a href="{{ url('/') }}"
-           class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors {{ request()->is('/') ? 'text-gym-primary' : '' }}">Home</a>
-        <a href="{{ route('artikelen.index') }}"
-           class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors {{ request()->routeIs('artikelen.index') ? 'text-gym-primary' : '' }}">Artikelen</a>
-        <a href="{{ url('/#features') }}"
-           class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Features</a>
-
-        @if (Route::has('login'))
-            <div class="h-px bg-gym-divider my-1"></div>
-            @auth
-                <a href="{{ url('/dashboard') }}"
-                   class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Dashboard</a>
-                <form method="POST" action="{{ route('logout') }}">
-                    @csrf
-                    <button type="submit"
-                            class="w-full text-left block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">
-                        Uitloggen
-                    </button>
-                </form>
-            @else
-                <a href="{{ route('login') }}"
-                   class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Log
-                    in</a>
-                @if (Route::has('register'))
-                    <a href="{{ route('register') }}"
-                       class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Sign
-                        up</a>
-                @endif
-            @endauth
-        @endif
-    </div>
-
-    <!-- Mobile Menu -->
-    <div x-show="mobileMenuOpen"
-         @click.away="mobileMenuOpen = false"
-         class="absolute top-full left-0 w-full bg-gym-surface border-b border-gym-border shadow-xl lg:hidden flex flex-col p-4 gap-2"
-         style="display: none;">
-        <a href="{{ url('/') }}"
-           class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors {{ request()->is('/') ? 'text-gym-primary' : '' }}">Home</a>
-        <a href="{{ route('artikelen.index') }}"
-           class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors {{ request()->routeIs('artikelen.index') ? 'text-gym-primary' : '' }}">Artikelen</a>
-
-        <!-- Mobile Auth Links -->
-        @if (Route::has('login'))
-            <div class="h-px bg-gym-divider my-1"></div>
-            @auth
-                <a href="{{ url('/dashboard') }}"
-                   class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Dashboard</a>
-            @else
-                <a href="{{ route('login') }}"
-                   class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Log
-                    in</a>
-                @if (Route::has('register'))
-                    <a href="{{ route('register') }}"
-                       class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Sign
-                        up</a>
+                    <a href="{{ route('register') }}" class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">Sign up</a>
                 @endif
             @endauth
         @endif

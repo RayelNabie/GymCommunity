@@ -15,7 +15,7 @@
 @endphp
 
 <div class="flex flex-wrap gap-2">
-    {{-- Knop: Alles --}}
+    {{-- All Button --}}
     <a href="{{ route('artikelen.index', Arr::except($currentFilters, 'category')) }}"
         @class([
             $sharedStyles,
@@ -25,7 +25,7 @@
         Alles
     </a>
 
-    {{-- Dynamische Categorieën --}}
+    {{-- Categories Button --}}
     @foreach(PostCategoryEnum::cases() as $category)
         @php
             $isActive = ($activeCategory === $category->value);

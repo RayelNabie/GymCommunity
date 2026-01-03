@@ -4,6 +4,8 @@ namespace App\Models;
 
 use App\Enums\PostCategoryEnum;
 use Database\Factories\PostFactory;
+use Illuminate\Database\Eloquent\Attributes\Scope;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -67,5 +69,20 @@ class Post extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
+    /**
+     * Scope the query to filter posts based on category and search terms.
+     *
+     * @param  Builder<Post>  $query
+     * @param  array{category?: string, search?: string}  $filters
+     */
+    #[Scope]
+    protected function filter(Builder $query, array $filters): void
+    {
+        if (! empty($filters['category'])) {
+            $categoryValue = $filters['category'];
+            $query->where('category', $categoryValue);
+        }
     }
 }

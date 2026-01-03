@@ -4,9 +4,8 @@ use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('landing_page.index');
-});
+Route::view('/', 'landing_page.index');
+Route::view('/dashboard', 'dashboard/user/index')->middleware(['auth', 'verified', 'throttle:60,1'])->name('dashboard');
 
 Route::prefix('artikelen')->name('artikelen.')->group(function () {
     // public
@@ -24,10 +23,6 @@ Route::prefix('artikelen')->name('artikelen.')->group(function () {
         Route::delete('/{post}', [PostController::class, 'destroy'])->name('destroy');
     });
 });
-
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified', 'throttle:60,1'])->name('dashboard');
 
 Route::middleware(['auth', 'throttle:20,1'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

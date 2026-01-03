@@ -21,10 +21,11 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
  * @property string|null $image
  *
  * @phpstan-type FilterInputs array{category?: string, search?: string, sort?: string}
+ *
  * @method static Builder|Post myarticle(bool $active = false)
  * @method static Builder|Post search(?string $term)
  * @method static Builder|Post category(?string $category)
- * /
+ *                                                         /
  */
 class Post extends Model
 {

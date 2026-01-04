@@ -111,34 +111,13 @@ class PostController extends Controller
      */
     public function show(Post $post): View
     {
-        $isPublished = false;
-        $canView = false;
-        $canEdit = false;
-        $canDelete = false;
-
-        if ($post->exists) {
-            $isPublished = true;
-        }
         $user = auth()->user();
-
-        // enforce policy even though anyone can view
-        if ($user !== null && $user->can('view', $post)) {
-            $canView = true;
-        }
-
-        if ($user !== null && $user->can('update', $post)) {
-            $canEdit = true;
-        }
-
-        if ($user !== null && $user->can('delete', $post)) {
-            $canDelete = true;
-        }
+        $isPublished = $post->exists;
+        $canView = !$user || $user->can('view', $post);
 
         if ($isPublished && $canView) {
             return view('artikelen.[slug]', [
                 'post' => $post,
-                'canEdit' => $canEdit,
-                'canDelete' => $canDelete,
             ]);
         }
 

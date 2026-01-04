@@ -12,7 +12,7 @@
 
         <x-artikelen.show.show-content :$post/>
 
-        <x-artikelen.show.show-footer :$post :$canEdit :$canDelete/>
+        <x-artikelen.show.show-footer :$post/>
 
     </article>
 </x-app-layout>

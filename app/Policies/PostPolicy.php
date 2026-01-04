@@ -3,11 +3,24 @@
 namespace App\Policies;
 
 use App\Enums\PermissionEnum;
+use App\Enums\RoleEnum;
 use App\Models\Post;
 use App\Models\User;
 
 class PostPolicy
 {
+    /**
+     * Determine whether the user is an admin, bypasses all other checks.
+     */
+    public function before(User $user, string $ability): ?bool
+    {
+        if ($user->hasRole(RoleEnum::ADMIN)) {
+            return true;
+        }
+
+        return null;
+    }
+
     /**
      * Determine whether the user can view any models.
      */

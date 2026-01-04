@@ -32,7 +32,7 @@
                 <a href="{{ route('profile.edit') }}"
                    class="btn btn-sm btn-outline btn-primary text-gym-secondary hover:bg-gym-primary hover:text-gym-background"
                    title="Profiel">
-                    <i data-lucide="user" class="size-4"></i>
+                    <i data-lucide="user" class="size-4"></i> {{ auth()->user()->name }}
                 </a>
                 <form method="POST" action="{{ route('logout') }}" class="inline">
                     @csrf
@@ -71,7 +71,7 @@
                 <a href="{{ route('profile.edit') }}"
                    class="btn btn-sm btn-outline btn-primary text-gym-secondary hover:bg-gym-primary hover:text-gym-background"
                    title="Profiel">
-                    <i data-lucide="user" class="size-4"></i>
+                    <i data-lucide="user" class="size-4"></i>{{ auth()->user()->name }}
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf

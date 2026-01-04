@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\Admin\DashboardController as AdminDashboardController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\PostController;
 use App\Http\Controllers\ProfileController;
@@ -32,6 +34,16 @@ Route::middleware(['auth', 'throttle:20,1'])->group(function () {
     Route::get('/profiel', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profiel', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profiel', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::middleware(['auth', 'verified', 'can:viewAdminDashboard,App\Models\User'])->prefix('admin')->group(function () {
+    Route::get('/', [AdminDashboardController::class, 'index'])->name('admin.index');
+
+    Route::prefix('users')->name('users.')->group(function () {
+        Route::get('/{user}/edit', [UserController::class, 'edit'])->name('edit');
+        Route::put('/{user}', [UserController::class, 'update'])->name('update');
+        Route::delete('/{user}', [UserController::class, 'destroy'])->name('destroy');
+    });
 });
 
 require __DIR__.'/auth.php';

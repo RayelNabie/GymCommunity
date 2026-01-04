@@ -30,13 +30,13 @@ it('runs the database seeder successfully', function () {
     $this->seed(DatabaseSeeder::class);
 
     // Assert
-    // Check for users (10 regular + 1 admin)
-    expect(User::count())->toBe(11);
+    // Check for users (1 admin + 3 managers + 10 trainers + 50 members = 64)
+    expect(User::count())->toBe(64);
 
     // Check for admin user
-    $admin = User::where('email', 'admin@example.com')->first();
+    $admin = User::where('email', 'admin@gym.nl')->first();
     expect($admin)->not->toBeNull()
-        ->and($admin->name)->toBe('Admin')
+        ->and($admin->name)->toBe('Admin User')
         ->and(Post::count())->toBeGreaterThan(0);
 
     // Check that posts were seeded

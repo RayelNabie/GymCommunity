@@ -113,11 +113,13 @@ class PostController extends Controller
     {
         $user = auth()->user();
         $isPublished = $post->exists;
-        $canView = !$user || $user->can('view', $post);
+        $canView = ! $user || $user->can('view', $post);
 
         if ($isPublished && $canView) {
             return view('artikelen.[slug]', [
                 'post' => $post,
+                'canEdit' => $user && $user->can('update', $post),
+                'canDelete' => $user && $user->can('delete', $post),
             ]);
         }
 

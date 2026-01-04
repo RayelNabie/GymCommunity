@@ -66,13 +66,23 @@ describe('Happy Flow', function () {
 });
 
 describe('Unhappy Flow', function () {
-    it('returns 404 for guests trying to view a post', function () {
-        // Based on current controller logic, guests cannot view posts
+    it('allows guests to view a post', function () {
         $post = Post::factory()->create();
 
         $response = $this->get(route('artikelen.show', $post));
 
-        $response->assertStatus(404);
+        $response->assertStatus(200);
+        $response->assertViewHas('canEdit', false);
+        $response->assertViewHas('canDelete', false);
+    });
+
+    it('does not show management options to guests', function () {
+        $post = Post::factory()->create();
+
+        $response = $this->get(route('artikelen.show', $post));
+
+        $response->assertDontSee("Je kunt dit artikel beheren via 'Mijn Artikelen'.");
+        $response->assertDontSee('Je bekijkt dit artikel met beheerdersrechten.');
     });
 
     it('returns 404 when trying to view a non-existent post', function () {

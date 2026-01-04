@@ -13,8 +13,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
 
+/**
+ * @method static Builder<static> search(string $searchTerm)
+ * @method static Builder<static> whereRole(RoleEnum $role)
+ * @method static Builder<static> whereHasPermission(PermissionEnum $permission)
+ * @method static Builder<static> filteredForAdmin(Request $request)
+ */
 class User extends Authenticatable implements MustVerifyEmail
 {
     /** @use HasFactory<UserFactory> */
@@ -99,7 +106,10 @@ class User extends Authenticatable implements MustVerifyEmail
     public function hasPermission(PermissionEnum $permission): bool
     {
         return $this->roles()
-            ->whereHas('permissions', fn ($query) => $query->where('name', $permission->value))
+            ->whereHas('permissions', function ($query) use ($permission) {
+                /** @phpstan-ignore-next-line Reason: PHPStan fails to infer that 'name' is a valid column on the related model. */
+                $query->where('name', $permission->value);
+            })
             ->exists();
     }
 
@@ -112,24 +122,92 @@ class User extends Authenticatable implements MustVerifyEmail
     }
 
     /**
-     * Filter users by role in a query
+     *  Filter users by role in a query
      *
-     * @param  Builder<User>  $query
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     #[Scope]
-    public function whereRole(Builder $query, RoleEnum $role): void
+    public function whereRole(Builder $query, RoleEnum $role): Builder
     {
-        $query->whereHas('roles', fn ($q) => $q->where('name', $role->value));
+        $query->whereHas('roles', function ($q) use ($role) {
+            /** @phpstan-ignore-next-line Reason: PHPStan fails to infer that 'name' is a valid column on the related model. */
+            $q->where('name', $role->value);
+        });
+
+        return $query;
     }
 
     /**
      * Filter users by permissions in a query
      *
-     * @param  Builder<User>  $query
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     #[Scope]
-    public function whereHasPermission(Builder $query, PermissionEnum $permission): void
+    public function whereHasPermission(Builder $query, PermissionEnum $permission): Builder
     {
-        $query->whereHas('roles.permissions', fn ($q) => $q->where('name', $permission->value));
+        $query->whereHas('roles.permissions', function ($q) use ($permission) {
+            /** @phpstan-ignore-next-line Reason: PHPStan fails to infer that 'name' is a valid column on the related model. */
+            $q->where('name', $permission->value);
+        });
+
+        return $query;
+    }
+
+    /**
+     * Filter users based on admin dashboard request inputs.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    #[Scope]
+    public function filteredForAdmin(Builder $query, Request $request): Builder
+    {
+        $query->with('roles');
+
+        $search = $request->string('search')->trim()->toString();
+        $role = $request->string('role')->trim()->toString();
+        $permission = $request->string('permission')->trim()->toString();
+
+        if ($search !== '') {
+            /** @phpstan-ignore-next-line
+             * Reason: Larastan 3.0 cannot resolve the #[Scope] attribute internally on the
+             * Builder instance. Method search() is defined below and runtime-safe. */
+            $this->search($query, $search);
+        }
+
+        if ($role !== '' && ($roleEnum = RoleEnum::tryFrom($role))) {
+            /** @phpstan-ignore-next-line
+             * Reason: Larastan 3.0 cannot resolve the #[Scope] attribute internally on the
+             * Builder instance. Method search() is defined below and runtime-safe. */
+            $this->whereRole($query, $roleEnum);
+        }
+
+        if ($permission !== '' && ($permEnum = PermissionEnum::tryFrom($permission))) {
+            /** @phpstan-ignore-next-line
+             * Reason: Larastan 3.0 cannot resolve the #[Scope] attribute internally on the
+             * Builder instance. Method search() is defined below and runtime-safe. */
+            $this->whereHasPermission($query, $permEnum);
+        }
+
+        return $query->latest();
+    }
+
+    /**
+     * Filter users by name or email address.
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
+     */
+    #[Scope]
+    public function search(Builder $query, string $searchTerm): Builder
+    {
+        $query->where(function (Builder $q) use ($searchTerm) {
+            $q->where('name', 'like', "%{$searchTerm}%")
+                ->orWhere('email', 'like', "%{$searchTerm}%");
+        });
+
+        return $query;
     }
 }

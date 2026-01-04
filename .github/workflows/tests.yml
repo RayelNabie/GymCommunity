@@ -41,6 +41,9 @@ jobs:
       - name: Run Migrations
         run: php artisan migrate --force
 
+      - name: Optimize Autoloader
+        run: composer dump-autoload
+
       - name: Test Codebase
         run: php artisan test
 

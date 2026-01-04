@@ -33,6 +33,10 @@ expect()->extend('toBeOne', function () {
     return $this->toBe(1);
 });
 
+use App\Enums\RoleEnum;
+use App\Models\Role;
+use App\Models\User;
+
 /*
 |--------------------------------------------------------------------------
 | Functions
@@ -44,7 +48,20 @@ expect()->extend('toBeOne', function () {
 |
 */
 
-function something()
+function createAdmin(): User
 {
-    // ..
+    $admin = User::factory()->create();
+    $role = Role::firstOrCreate(['name' => RoleEnum::ADMIN->value]);
+    $admin->roles()->attach($role);
+
+    return $admin;
+}
+
+function createUserWithRole(RoleEnum $roleEnum): User
+{
+    $user = User::factory()->create();
+    $role = Role::firstOrCreate(['name' => $roleEnum->value]);
+    $user->roles()->attach($role);
+
+    return $user;
 }

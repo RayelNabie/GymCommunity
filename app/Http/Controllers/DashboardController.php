@@ -12,6 +12,7 @@ class DashboardController extends Controller
      */
     public function index(): View
     {
+        /** @phpstan-ignore-next-line Reason: Larastan cannot resolve #[Scope] methods (myarticle) on the Builder instance. */
         $posts = Post::query()
             ->with('user')
             ->myarticle(true)

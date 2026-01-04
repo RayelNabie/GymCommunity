@@ -6,12 +6,15 @@ parameters:
 
     paths:
         - app/
+    checkOctaneCompatibility: true
+    checkModelProperties: true
 
     # If you need to add project stubs for Larastan, add them here.
     # Avoid stubbing framework classes directly as that can shadow methods.
 
     # Level 10 is the highest level
     level: 10
+
 
 #    ignoreErrors:
 #        - '#PHPDoc tag @var#'

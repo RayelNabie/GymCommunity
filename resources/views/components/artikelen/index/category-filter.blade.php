@@ -29,7 +29,6 @@
     @foreach(PostCategoryEnum::cases() as $category)
         @php
             $isActive = ($activeCategory === $category->value);
-            // Bouw de URL op basis van bestaande filters + deze categorie
             $url = route('artikelen.index', array_merge($currentFilters, ['category' => $category->value]));
         @endphp
 

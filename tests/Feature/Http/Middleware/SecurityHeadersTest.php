@@ -13,7 +13,7 @@ describe('Happy Flow', function () {
             $this->actingAs($user);
         }
 
-        $response = $this->get('https://localhost' . $route);
+        $response = $this->get('https://localhost'.$route);
 
         $response->assertHeader('X-Frame-Options', 'DENY')
             ->assertHeader('X-Content-Type-Options', 'nosniff')
@@ -53,7 +53,7 @@ describe('Unhappy Flow', function () {
 
     it('adds security headers even when the application errors (500) in production', function () {
         $this->app['env'] = 'production';
-        
+
         // Define a route that throws an exception
         Route::get('/test-error-route', function () {
             throw new Exception('Test Server Error');

@@ -21,6 +21,7 @@ class PostController extends Controller
         /** @var array{category?: string, search?: string} $validated */
         $validated = $request->validated();
 
+        /** @phpstan-ignore-next-line Reason: Larastan cannot resolve #[Scope] methods (category, search) on the Builder instance. */
         $posts = Post::query()
             ->with('user')
             ->category($validated['category'] ?? null)

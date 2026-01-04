@@ -124,7 +124,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      *  Filter users by role in a query
      *
-     * @param Builder<static> $query
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     #[Scope]
@@ -141,7 +141,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Filter users by permissions in a query
      *
-     * @param Builder<static> $query
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     #[Scope]
@@ -158,7 +158,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Filter users based on admin dashboard request inputs.
      *
-     * @param Builder<static> $query
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     #[Scope]
@@ -197,7 +197,7 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
      * Filter users by name or email address.
      *
-     * @param Builder<static> $query
+     * @param  Builder<static>  $query
      * @return Builder<static>
      */
     #[Scope]

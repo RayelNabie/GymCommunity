@@ -44,9 +44,9 @@ class UserPolicy
     /**
      * Determine whether the user can update a specific user (e.g., change roles).
      */
-    public function update(User $user): bool
+    public function update(User $user, User $model): bool
     {
-        return $this->isAdmin($user);
+        return $this->isAdmin($user) && $user->isNot($model);
     }
 
     /**

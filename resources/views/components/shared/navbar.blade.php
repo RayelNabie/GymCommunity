@@ -29,6 +29,11 @@
                 <a href="{{ route('dashboard') }}"
                    class="btn btn-sm btn-outline btn-primary text-gym-secondary hover:bg-gym-primary hover:text-gym-background">Mijn Artikelen</a>
 
+                <a href="{{ route('profile.edit') }}"
+                   class="btn btn-sm btn-outline btn-primary text-gym-secondary hover:bg-gym-primary hover:text-gym-background"
+                   title="Profiel">
+                    <i data-lucide="user" class="size-4"></i>
+                </a>
                 <form method="POST" action="{{ route('logout') }}" class="inline">
                     @csrf
                     <button type="submit"
@@ -63,6 +68,11 @@
                 <a href="{{ route('dashboard') }}"
                    class="block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors {{ request()->routeIs('dashboard') ? 'text-gym-primary' : '' }}">Mijn Artikelen</a>
 
+                <a href="{{ route('profile.edit') }}"
+                   class="btn btn-sm btn-outline btn-primary text-gym-secondary hover:bg-gym-primary hover:text-gym-background"
+                   title="Profiel">
+                    <i data-lucide="user" class="size-4"></i>
+                </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="w-full text-left block px-4 py-2 hover:bg-gym-surface-hover rounded-lg hover:text-gym-primary transition-colors">

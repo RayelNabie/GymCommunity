@@ -22,6 +22,9 @@ test(/**
         ->patch('/profiel', [
             'name' => 'Test User',
             'email' => 'test@example.com',
+            'phone_number' => '1234567890',
+            'address' => 'Test Address 123',
+            'date_of_birth' => '1990-01-01',
         ]);
 
     $response
@@ -32,6 +35,9 @@ test(/**
 
     $this->assertSame('Test User', $user->name);
     $this->assertSame('test@example.com', $user->email);
+    $this->assertSame('1234567890', $user->phone_number);
+    $this->assertSame('Test Address 123', $user->address);
+    $this->assertSame('1990-01-01', $user->date_of_birth->format('Y-m-d'));
     $this->assertNull($user->email_verified_at);
 });
 

@@ -16,6 +16,10 @@ class SecurityHeaders
 {
     public function handle(Request $request, Closure $next): Response
     {
+        if (! $request->secure() && app()->environment('production')) {
+            return redirect()->secure($request->getRequestUri());
+        }
+
         Vite::useCspNonce();
 
         /** @var Response $response */

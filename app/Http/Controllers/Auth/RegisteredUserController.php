@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Enums\RoleEnum;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\RegisterRequest;
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -41,6 +43,11 @@ class RegisteredUserController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password()),
         ]);
+
+        $memberRole = Role::where('name', RoleEnum::MEMBER->value)->first();
+        if ($memberRole) {
+            $user->roles()->attach($memberRole);
+        }
 
         event(new Registered($user));
 

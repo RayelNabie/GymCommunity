@@ -43,8 +43,15 @@
         </p>
 
         <div class="card-actions flex items-center justify-between mt-auto pt-4 border-t border-zinc-800/50">
-            <div class="flex gap-1">
+            <div class="flex gap-1 items-center">
                 @if($showActions)
+{{--                    on - off switch--}}
+                    <x-shared.status-toggle
+                        :item="$post"
+                        route="artikelen.toggle-active"
+                        tooltip-position="right"
+                        class="mr-2"
+                    />
                     <a href="{{ route('artikelen.edit', $post) }}"
                        class="btn btn-ghost btn-sm btn-square text-blue-400 hover:bg-blue-400/10"
                        title="Aanpassen">

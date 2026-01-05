@@ -36,6 +36,24 @@ describe('Happy Flow', function () {
         $response->assertSee('Test Author');
         $response->assertSee($newPost->category->label());
     });
+
+    it('does not display inactive posts', function () {
+        $activePost = Post::factory()->create([
+            'title' => 'Active Post',
+            'is_active' => true,
+        ]);
+
+        $inactivePost = Post::factory()->create([
+            'title' => 'Inactive Post',
+            'is_active' => false,
+        ]);
+
+        $response = $this->get(route('artikelen.index'));
+
+        $response->assertStatus(200);
+        $response->assertSee('Active Post');
+        $response->assertDontSee('Inactive Post');
+    });
 });
 
 describe('Unhappy Flow', function () {

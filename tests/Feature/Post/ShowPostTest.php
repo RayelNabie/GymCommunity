@@ -51,6 +51,16 @@ describe('Happy Flow', function () {
         $response->assertViewHas('canDelete', false);
     });
 
+    it('allows the owner to view their inactive post', function () {
+        $user = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $user->user_id, 'is_active' => false]);
+
+        $response = $this->actingAs($user)->get(route('artikelen.show', $post));
+
+        $response->assertStatus(200);
+        $response->assertSee($post->title);
+    });
+
     it('allows viewing a post with query parameters in the URL', function () {
         $user = User::factory()->create();
         $post = Post::factory()->create();
@@ -66,6 +76,24 @@ describe('Happy Flow', function () {
 });
 
 describe('Unhappy Flow', function () {
+    it('returns 404 for inactive post when viewed by another user', function () {
+        $owner = User::factory()->create();
+        $post = Post::factory()->create(['user_id' => $owner->user_id, 'is_active' => false]);
+        $otherUser = User::factory()->create();
+
+        $response = $this->actingAs($otherUser)->get(route('artikelen.show', $post));
+
+        $response->assertStatus(404);
+    });
+
+    it('returns 404 for inactive post when viewed by guest', function () {
+        $post = Post::factory()->create(['is_active' => false]);
+
+        $response = $this->get(route('artikelen.show', $post));
+
+        $response->assertStatus(404);
+    });
+
     it('allows guests to view a post', function () {
         $post = Post::factory()->create();
 

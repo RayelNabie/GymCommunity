@@ -20,13 +20,15 @@ use Illuminate\Http\Request;
  * @property string $body
  * @property PostCategoryEnum $category
  * @property string|null $image
+ * @property bool $is_active
  *
  * @phpstan-type FilterInputs array{category?: string, search?: string, sort?: string}
  *
- * @method static \Illuminate\Database\Eloquent\Builder|Post search(?string $term)
- * @method static \Illuminate\Database\Eloquent\Builder|Post category(?string $category)
- * @method static \Illuminate\Database\Eloquent\Builder|Post myarticle(bool $active = false)
- * @method static \Illuminate\Database\Eloquent\Builder|Post filteredForAdmin(\Illuminate\Http\Request $request)
+ * @method static Builder|Post search(?string $term)
+ * @method static Builder|Post category(?string $category)
+ * @method static Builder|Post active()
+ * @method static Builder|Post myarticle(bool $active = false)
+ * @method static Builder|Post filteredForAdmin(Request $request)
  */
 class Post extends Model
 {
@@ -64,6 +66,7 @@ class Post extends Model
         'body',
         'category',
         'image',
+        'is_active',
     ];
 
     /**
@@ -74,6 +77,7 @@ class Post extends Model
     protected function casts(): array
     {
         return [
+            'is_active' => 'boolean',
             'category' => PostCategoryEnum::class,
         ];
     }
@@ -86,6 +90,18 @@ class Post extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id', 'user_id');
+    }
+
+    /**
+     * Scope the query to only include active posts.
+     *
+     * @param  Builder<Post>  $query
+     * @return Builder<Post>
+     */
+    #[Scope]
+    public function active(Builder $query): Builder
+    {
+        return $query->where('is_active', true);
     }
 
     /**

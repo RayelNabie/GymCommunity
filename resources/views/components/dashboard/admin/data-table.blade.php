@@ -29,10 +29,18 @@
                         </span>
                     </td>
                     <td class="py-4 text-right">
-                        @can('update', $item)
-                            <a href="{{ route('artikelen.edit', $item) }}"
-                               class="text-gym-primary hover:underline">Aanpassen</a>
-                        @endcan
+                        <div class="flex justify-end items-center gap-2">
+                            @can('update', $item)
+                                <x-shared.status-toggle 
+                                    :item="$item" 
+                                    route="artikelen.toggle-active" 
+                                    tooltip-position="left" 
+                                />
+
+                                <a href="{{ route('artikelen.edit', $item) }}"
+                                   class="text-gym-primary hover:underline">Aanpassen</a>
+                            @endcan
+                        </div>
                     </td>
                 @else
                     <td class="py-4 font-bold text-white">

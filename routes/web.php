@@ -20,6 +20,7 @@ Route::prefix('artikelen')->name('artikelen.')->group(function () {
         Route::post('/', [PostController::class, 'store'])->name('store');
         Route::get('/{post}/aanpassen', [PostController::class, 'edit'])->name('edit');
         Route::put('/{post}', [PostController::class, 'update'])->name('update');
+        Route::patch('/{post}/toggle-active', [PostController::class, 'toggleActive'])->name('toggle-active');
         Route::delete('/{post}', [PostController::class, 'destroy'])->name('destroy');
     });
 

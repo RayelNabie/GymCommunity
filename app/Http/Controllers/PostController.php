@@ -7,6 +7,7 @@ use App\Http\Requests\Posts\FilterRequest;
 use App\Http\Requests\Posts\PostRequest;
 use App\Models\Post;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
@@ -23,6 +24,7 @@ class PostController extends Controller
 
         /** @phpstan-ignore-next-line Reason: Larastan cannot resolve #[Scope] methods (category, search) on the Builder instance. */
         $posts = Post::query()
+            ->active()
             ->with('user')
             ->category($validated['category'] ?? null)
             ->search($validated['search'] ?? null)
@@ -112,18 +114,18 @@ class PostController extends Controller
     public function show(Post $post): View
     {
         $user = auth()->user();
-        $isPublished = $post->exists;
-        $canView = ! $user || $user->can('view', $post);
 
-        if ($isPublished && $canView) {
-            return view('artikelen.[slug]', [
-                'post' => $post,
-                'canEdit' => $user && $user->can('update', $post),
-                'canDelete' => $user && $user->can('delete', $post),
-            ]);
+        if (! $post->is_active) {
+            if (! $user || ! $user->can('update', $post)) {
+                abort(404, 'Artikel niet gevonden of nog niet openbaar.');
+            }
         }
 
-        abort(404, 'Artikel niet gevonden of nog niet openbaar.');
+        return view('artikelen.[slug]', [
+            'post' => $post,
+            'canEdit' => $user && $user->can('update', $post),
+            'canDelete' => $user && $user->can('delete', $post),
+        ]);
     }
 
     /**
@@ -253,5 +255,21 @@ class PostController extends Controller
         }
 
         abort(403, 'Je hebt geen rechten om dit artikel te verwijderen.');
+    }
+
+    /**
+     * Toggle the active status of the post.
+     */
+    public function toggleActive(Request $request, Post $post): RedirectResponse
+    {
+        if (! $request->user() || ! $request->user()->can('update', $post)) {
+            abort(403, 'Je hebt geen rechten om de status van dit artikel te wijzigen.');
+        }
+
+        $post->update([
+            'is_active' => ! $post->is_active,
+        ]);
+
+        return back()->with('success', 'Artikel status bijgewerkt.');
     }
 }

@@ -15,8 +15,11 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Request;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 
 /**
+ * @property Carbon|null $last_login_at
+ * @property int $login_streak
  * @method static Builder<static> search(string $searchTerm)
  * @method static Builder<static> whereRole(RoleEnum $role)
  * @method static Builder<static> whereHasPermission(PermissionEnum $permission)
@@ -58,6 +61,8 @@ class User extends Authenticatable implements MustVerifyEmail
         'phone_number',
         'address',
         'date_of_birth',
+        'last_login_at',
+        'login_streak',
     ];
 
     /**
@@ -81,6 +86,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'date_of_birth' => 'date',
             'password' => 'hashed',
+            'last_login_at' => 'datetime',
         ];
     }
 

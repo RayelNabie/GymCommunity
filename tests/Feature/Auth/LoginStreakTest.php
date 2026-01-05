@@ -28,7 +28,7 @@ describe('Login Streak Tracking', function () {
         it('increments the streak when logging in on the next day', function () {
             $now = Carbon::now();
             $yesterday = $now->copy()->subDay();
-            
+
             $user = User::factory()->create([
                 'last_login_at' => $yesterday,
                 'login_streak' => 1,
@@ -45,7 +45,7 @@ describe('Login Streak Tracking', function () {
         it('promotes the user to TRAINER after 30 consecutive days', function () {
             $now = Carbon::now();
             $yesterday = $now->copy()->subDay();
-            
+
             $user = User::factory()->create([
                 'last_login_at' => $yesterday,
                 'login_streak' => 29,
@@ -81,7 +81,7 @@ describe('Login Streak Tracking', function () {
         it('resets the streak to 1 when logging in after a missed day', function () {
             $now = Carbon::now();
             $twoDaysAgo = $now->copy()->subDays(2);
-            
+
             $user = User::factory()->create([
                 'last_login_at' => $twoDaysAgo,
                 'login_streak' => 5,

@@ -6,7 +6,6 @@ use App\Enums\RoleEnum;
 use App\Models\Role;
 use App\Models\User;
 use Illuminate\Auth\Events\Login;
-use Illuminate\Support\Carbon;
 
 class UpdateLoginStreak
 {
@@ -23,7 +22,7 @@ class UpdateLoginStreak
      */
     public function handle(Login $event): void
     {
-        if (!$event->user instanceof User) {
+        if (! $event->user instanceof User) {
             return;
         }
 
@@ -31,6 +30,7 @@ class UpdateLoginStreak
 
         if ($user->last_login_at?->isToday()) {
             $user->update(['last_login_at' => now()]);
+
             return;
         }
 
@@ -41,7 +41,7 @@ class UpdateLoginStreak
         $user->last_login_at = now();
         $user->save();
 
-        if ($user->login_streak >= 30 && !$user->hasRole(RoleEnum::TRAINER)) {
+        if ($user->login_streak >= 30 && ! $user->hasRole(RoleEnum::TRAINER)) {
             $trainerRole = Role::firstWhere('name', RoleEnum::TRAINER->value);
 
             if ($trainerRole) {

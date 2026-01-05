@@ -20,6 +20,7 @@ use Illuminate\Support\Carbon;
 /**
  * @property Carbon|null $last_login_at
  * @property int $login_streak
+ *
  * @method static Builder<static> search(string $searchTerm)
  * @method static Builder<static> whereRole(RoleEnum $role)
  * @method static Builder<static> whereHasPermission(PermissionEnum $permission)
